@@ -1,6 +1,7 @@
 # TODO list application 
 # 
 # Written by Connie Compos
+# for  Udacity Full Stack Web Developer Nanodegree
 
 from flask import Flask, render_template, request, redirect, url_for, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
@@ -27,7 +28,7 @@ class TodoList(db.Model):
    todos = db.relationship('Todo', backref='todolist', lazy=True)  #Lazy be default 
 
    def __repr__(self):
-       return f'<Todo {self.id} {self.description}>'
+       return f'<TodoList {self.id} {self.name}>'
 
 #Table for todo items has (Child)
 class Todo(db.Model):
@@ -35,22 +36,23 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(), nullable=False)
     completed = db.Column(db.Boolean, nullable=False, default=False)
-    todolist_id = db.Column(db.Integer, db.ForeignKey('todolist.id'), nullable=False)
+    list_id = db.Column(db.Integer, db.ForeignKey('todolist.id'), nullable=False)
 
     def __repr__(self):
        return f'<Todo {self.id} {self.description}>'
 
 #  using migrations now .... don' use db.create_all()
-@app.route('/')
-@app.route('/index')
-def index():
-   return  render_template('index.html', data=Todo.query.order_by('id').all())
 
-# display home/index page with Todo lists
+# Home Page  
+@app.route('/lists/<list_id>')
+def get_list_todos(list_id):
+   #  for testing results returned for sql  print(Todo.query.filter_by(todolist_id=list_id).all())
+   return  render_template('index.html', data=Todo.query.filter_by(list_id=list_id).all())
+
 @app.route('/')
-@app.route('/index')
 def index():
-   return  render_template('index.html', data=List.query.order_by('id').all())
+   #redirect home page to get first list with its todos
+   return redirect(url_for('get_list_todos', list_id=1))
 
 #Add new todo item and refresh index page with new todo item
 @app.route('/todos/create', methods=['POST'])
