@@ -1,0 +1,120 @@
+ 
+ body{
+   font-family: Arial, sans-serif;
+   font-size:15px;
+ }
+
+ .hidden {
+    display: none;
+ }
+
+.master-container{
+  display: flex;
+  flex-direction: row; /*default*/
+  align-items:stretch;
+  background-color: orange;
+  border-radius:15px;
+  border-style:solid;
+  border-width:5px;
+  width: 500px;
+}
+
+.lists-container{
+   background-color:plum;
+   border-radius:15px;
+   width: 150px;
+   margin: 10px;
+   margin-right:5px;
+}
+.list-container {
+    margin: 10px;
+    margin-left:5px;
+    border: 5px;
+    padding: 15px;
+    background-color: #b3ccff;  /* bluish */
+    border-radius: 15px;
+    width:300px;
+}
+
+.form-add {
+    width: 275px;
+}
+
+
+ul {
+   list-style: none;
+   padding: 0;
+   margin: 10px;
+   width:225px
+}
+ 
+li.listitem {
+    width:225px;
+}
+
+li.list {
+   width: 115px;
+}
+
+.delete-button{
+  -webkit-appearance: none;
+   height: 15px;
+   width: 15px;
+   color: red;
+   margin: 0;
+   padding: 0;
+   text-align: center;
+   outline: none;
+   cursor: pointer;
+   font-size:15px;
+   border:none;
+   border-radius:2px;
+   float: right;
+}
+
+.delete-item-button {
+   -webkit-appearance: none;
+   height: 15px;
+   width: 15px;
+   float: right;
+   color: red;
+   margin: 0;
+   padding: 0;
+   text-align: center;
+   border: none;
+   outline: none;
+   cursor: pointer;
+   font-size:15px;
+   border-radius:2px;
+   background-color:transparent;
+}
+
+.delete-list-button{
+  -webkit-appearance: none;
+   height: 15px;
+   width: 15px;
+   color: red;
+   margin: 0;
+   padding: 0;
+   text-align: center;
+   outline: none;
+   cursor: pointer;
+   font-size:15px;
+   border:none;
+   border-radius:2px;
+   float: right;
+}
+
+.checkbox-completed {
+  margin: 0px;
+  margin-right: 10px;
+}
+ 
+.description {
+  width: 200px;
+  border-radius: 2px;
+}
+
+.rounded-corners {
+   border-radius:2px;
+}

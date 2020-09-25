@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>To Do List App</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="list icon" href="../static/images/listicon.ico" type="image/x-icon" />
+    <style type="text/css">
+    </style>
+    
+</head>
+<body>
+    
+    <div class="master-container">
+        <div class="lists-container">
+            <!-- temp code place holder-->
+            <div style="margin:10px;">
+                <label style="text-align:center;">Todo Lists Demo</label>
+                <div>
+                    <ul class="todolists">   
+                        {% for d in data %}
+                            <li class="list">
+                            {{ d.description }}
+                            <button class="delete-list-button" data-id="{{ d.id }}">&cross;</button>
+                            </li>
+                        {% endfor %}   
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="list-container">
+            <div class="form-add">
+            <!--form id="form" action="/todos/create" method="post"> This one for using form/submit w/o ajax-->
+                <form id="form">
+                    <input type="text" value="New Todo item" id="description" name="description" class="description">
+                    <input type="submit" value="Add" class="rounded-corners">
+                </form>
+            </div>
+            <div id="error" class="hidden">Something went wrong!</div>
+            <div>
+                <ul id="todolist">
+                    {% for d in data %}
+                        <li class="list-item">
+                        <input  type="checkbox" class="checkbox-completed" data-id="{{ d.id }}" {% if d.completed %} checked {% endif %}>
+                        {{ d.description }}
+                        <button class="delete-item-button" data-id="{{ d.id }}">&cross;</button>
+                        </li>
+                    {% endfor %}   
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- call script to update page -->
+    <script type="application/x-javascript" src="../static/js/todolist.js"></script>     
+</body>
+</html>
