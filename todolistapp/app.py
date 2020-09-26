@@ -25,7 +25,10 @@ class TodoList(db.Model):
    __tablename__= 'todolist' 
    id = db.Column(db.Integer, primary_key=True)
    name = db.Column(db.String(), nullable=False)
-   todos = db.relationship('Todo', backref='todolist', lazy=True)  #Lazy be default 
+   completed = db.Column(db.Boolean, nullable=False, default=False)
+   todos = db.relationship('Todo', backref='todolist', cascade="all, delete-orphan", lazy=True)  #Lazy be default 
+
+   
 
    def __repr__(self):
        return f'<TodoList {self.id} {self.name}>'
@@ -57,6 +60,80 @@ def index():
    #redirect home page to get first list with its todos
    return redirect(url_for('get_list_todos', list_id=1))
 
+#Add new list  and refresh index page with new list
+@app.route('/lists/create', methods=['POST'])
+def create_list():
+    error = False
+    body={}
+    
+    try:
+        name=request.get_json()['name']
+        #do something with user input data
+        if (name):
+           newlist = TodoList(name=name)
+           db.session.add(newlist)
+           db.session.commit()
+           # did the commit so our item should have an id now so we can include in returned 
+           # response  let's test this first ...
+           body['name'] = newlist.name  
+           body['id'] = newlist.id 
+    except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(400)  #HTTP exception for Internal Server Error   NEED to get actual error      
+    else: 
+        #refresh
+        return jsonify(body)
+
+# Update checkbox and all todo items associated with list
+@app.route('/lists/<list_id>/set-completed', methods=['POST'])
+def set_completed_list(list_id):
+   error = False
+   try:
+        print("list id:  ", list_id)
+        completed=request.get_json()['completed']
+        list = TodoList.query.get(list_id)
+        list.completed = completed
+        for todo in list.todos:
+            todo.completed = completed
+         
+        db.session.commit()  
+   except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+   finally:
+        db.session.close()
+   
+   return redirect(url_for('index'))
+
+
+ # Delete list and it's todo items for provided list id
+@app.route('/lists/<list_id>/delete', methods=['DELETE'])
+def delete_list(list_id):
+   error = False
+   
+   try:
+      list=TodoList.query.get(list_id)
+      db.session.delete(list)
+       #can also write as
+       #Todo.query.filter_by(id=todo_id).delete()
+      db.session.commit()
+   except:    
+      error = True
+      db.session.rollback()
+      print(sys.exc_info())
+   finally:
+      db.session.close()
+  
+   return jsonify({ 'success': True })
+
+       
+
 #Add new todo item and refresh index page with new todo item
 @app.route('/todos/create', methods=['POST'])
 def create_todo():
@@ -67,7 +144,10 @@ def create_todo():
         description=request.get_json()['description']
         #do something with user input data
         if (description):
+           listid = request.get_json()['todolist_id']
+           list = TodoList.query.get(listid)
            newtodoitem = Todo(description=description)
+           newtodoitem.todolist = list
            db.session.add(newtodoitem)
            db.session.commit()
            # did the commit so our item should have an id now so we can include in returned 
@@ -85,7 +165,7 @@ def create_todo():
     else: 
         #refresh
         return jsonify(body)
-      
+           
 #Update the completed column for provied user id
 @app.route('/todos/<todo_id>/set-completed', methods=['POST'])
 def set_completed_todo(todo_id):
@@ -105,7 +185,7 @@ def set_completed_todo(todo_id):
    return redirect(url_for('index'))
 
 # Delete item for provided user id
-@app.route('/todos/<todo_id>/delete-item', methods=['DELETE'])
+@app.route('/todos/<todo_id>/delete', methods=['DELETE'])
 def delete_todo_item(todo_id):
    error = False
    

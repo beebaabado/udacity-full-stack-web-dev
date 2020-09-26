@@ -5,6 +5,11 @@
    font-size:15px;
  }
 
+ h1, h2, h3, h4, h5, h6{
+   margin-top: 0;
+   margin-bottom: 5px;
+}
+
  .hidden {
     display: none;
  }
@@ -12,6 +17,7 @@
  .list-link{
     text-decoration: none;
     color:green;
+    width: 125px;
    }
  .list-link:hover {color:yellow;}
 
@@ -24,6 +30,7 @@
    border-radius: 15px;
    padding:20px;
 }
+
 .master-container{
   display:flex;
   flex-direction: row; /*default*/
@@ -32,17 +39,17 @@
   border-radius:15px;
   border-style:solid;
   border-width:5px;
-  width: 600px;
+  width: 650px;
 }
 
 .lists-container{
    background-color:plum;
    border-radius:15px;
-   width: 175px;
+   width: 250px;
    margin: 10px;
    margin-right:5px;
-   margin-left:15px;
-   padding:20px;
+   margin-left:10px;
+   padding:10px;
 }
 .list-container {
     margin: 10px;
@@ -50,13 +57,28 @@
     padding: 20px;
     background-color: #b3ccff;  /* bluish */
     border-radius: 15px;
-    width:300px;
+    width:350px;
 }
 
-.form-add {
-    width: 275px;
+.list-content-wrapper, .todo-content-wrapper {
+   width:175px;
 }
 
+.todo-content-wrapper {
+   width:200px;
+}
+
+.form-add-todo {
+   padding:0px;
+   margin:0px;
+   width: 275px;
+}
+
+.form-add-list {
+   padding:0px;
+   margin:0px;
+   width: 175px;
+}
 
 ul {
    list-style: none;
@@ -65,28 +87,11 @@ ul {
    width:220px
 }
  
-
 li.list {
    width: 125px;
 }
 
-.delete-button{
-  -webkit-appearance: none;
-   height: 15px;
-   width: 15px;
-   color: red;
-   margin: 0;
-   padding: 0;
-   text-align: center;
-   outline: none;
-   cursor: pointer;
-   font-size:15px;
-   border:none;
-   border-radius:2px;
-   float: right;
-}
-
-.delete-item-button {
+.delete-item-button, .delete-list-button {
    -webkit-appearance: none;
    height: 15px;
    width: 15px;
@@ -101,26 +106,10 @@ li.list {
    font-size:15px;
    border-radius:2px;
    background-color:transparent;
+   display:inline-block;
 }
 
-.delete-list-button{
-  -webkit-appearance: none;
-   height: 15px;
-   width: 15px;
-   color: red;
-   margin: 0;
-   padding: 0;
-   text-align: center;
-   outline: none;
-   cursor: pointer;
-   font-size:15px;
-   border:none;
-   border-radius:2px;
-   float: right;
-   background-color:transparent;
-}
-
-.checkbox-completed {
+.checkbox-completed-list, .checkbox-completed-item {
   margin: 0px;
   margin-right: 10px;
   float: left;
