@@ -10,43 +10,46 @@
     
 </head>
 <body>
-    
-    <div class="master-container">
-        <div class="lists-container">
-            <!-- temp code place holder-->
-            <div style="margin:10px;">
-                <label style="text-align:center;">Todo Lists Demo</label>
+    <div class="title-background-container"> 
+        <div><h1>TO DO LIST</h1></div>
+        <div class="master-container">
+            <div class="lists-container">
+                <!-- temp code place holder-->
+                <div style="margin:10px;">
+                    <label style="text-align:center;">Todo lists</label>
+                    <div>
+                        <ul class="todolists">   
+                            {% for list in lists %}
+                                <li class="list">
+                                 <a class="list-link" href="/lists/{{ list.id }}">{{ list.name }} </a>
+                                <button class="delete-list-button" data-id="{{ list.id }}">&cross;</button>
+                                </li>
+                            {% endfor %}   
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="list-container">
+                <h4>{{ active_list.name }}</h4>
+                <div class="form-add">
+                <!--form id="form" action="/todos/create" method="post"> This one for using form/submit w/o ajax-->
+                    <form id="form">
+                        <input type="text" value="New Todo item" id="description" name="description" class="description">
+                        <input type="submit" value="Add" class="rounded-corners">
+                    </form>
+                </div>
+                <div id="error" class="hidden">Something went wrong!</div>
                 <div>
-                    <ul class="todolists">   
-                        {% for d in data %}
-                            <li class="list">
-                            {{ d.description }}
-                            <button class="delete-list-button" data-id="{{ d.id }}">&cross;</button>
+                    <ul id="todolist">
+                        {% for todo in todos %}
+                            <li class="list-item">
+                            <input  type="checkbox" class="checkbox-completed" data-id="{{ todo.id }}" {% if todo.completed %} checked {% endif %}>
+                            {{ todo.description }}
+                            <button class="delete-item-button" data-id="{{ todo.id }}">&cross;</button>
                             </li>
                         {% endfor %}   
                     </ul>
                 </div>
-            </div>
-        </div>
-        <div class="list-container">
-            <div class="form-add">
-            <!--form id="form" action="/todos/create" method="post"> This one for using form/submit w/o ajax-->
-                <form id="form">
-                    <input type="text" value="New Todo item" id="description" name="description" class="description">
-                    <input type="submit" value="Add" class="rounded-corners">
-                </form>
-            </div>
-            <div id="error" class="hidden">Something went wrong!</div>
-            <div>
-                <ul id="todolist">
-                    {% for d in data %}
-                        <li class="list-item">
-                        <input  type="checkbox" class="checkbox-completed" data-id="{{ d.id }}" {% if d.completed %} checked {% endif %}>
-                        {{ d.description }}
-                        <button class="delete-item-button" data-id="{{ d.id }}">&cross;</button>
-                        </li>
-                    {% endfor %}   
-                </ul>
             </div>
         </div>
     </div>

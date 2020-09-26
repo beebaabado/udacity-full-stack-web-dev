@@ -47,7 +47,10 @@ class Todo(db.Model):
 @app.route('/lists/<list_id>')
 def get_list_todos(list_id):
    #  for testing results returned for sql  print(Todo.query.filter_by(todolist_id=list_id).all())
-   return  render_template('index.html', data=Todo.query.filter_by(list_id=list_id).all())
+   return  render_template('index.html', 
+      todos=Todo.query.filter_by(list_id=list_id).all(), 
+      active_list=TodoList.query.get(list_id),
+      lists=TodoList.query.all())
 
 @app.route('/')
 def index():

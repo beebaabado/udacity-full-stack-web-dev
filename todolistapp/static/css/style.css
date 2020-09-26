@@ -1,4 +1,5 @@
  
+  
  body{
    font-family: Arial, sans-serif;
    font-size:15px;
@@ -8,29 +9,45 @@
     display: none;
  }
 
+ .list-link{
+    text-decoration: none;
+    color:green;
+   }
+ .list-link:hover {color:yellow;}
+
+.title-background-container{
+   display:flex;
+   flex-direction:column;
+   align-items:center;
+   background-color:slategray;
+   width:650px;
+   border-radius: 15px;
+   padding:20px;
+}
 .master-container{
-  display: flex;
+  display:flex;
   flex-direction: row; /*default*/
   align-items:stretch;
   background-color: orange;
   border-radius:15px;
   border-style:solid;
   border-width:5px;
-  width: 500px;
+  width: 600px;
 }
 
 .lists-container{
    background-color:plum;
    border-radius:15px;
-   width: 150px;
+   width: 175px;
    margin: 10px;
    margin-right:5px;
+   margin-left:15px;
+   padding:20px;
 }
 .list-container {
     margin: 10px;
-    margin-left:5px;
-    border: 5px;
-    padding: 15px;
+    margin-left:12px;
+    padding: 20px;
     background-color: #b3ccff;  /* bluish */
     border-radius: 15px;
     width:300px;
@@ -45,15 +62,12 @@ ul {
    list-style: none;
    padding: 0;
    margin: 10px;
-   width:225px
+   width:220px
 }
  
-li.listitem {
-    width:225px;
-}
 
 li.list {
-   width: 115px;
+   width: 125px;
 }
 
 .delete-button{
@@ -103,11 +117,13 @@ li.list {
    border:none;
    border-radius:2px;
    float: right;
+   background-color:transparent;
 }
 
 .checkbox-completed {
   margin: 0px;
   margin-right: 10px;
+  float: left;
 }
  
 .description {

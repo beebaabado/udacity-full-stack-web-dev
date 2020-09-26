@@ -1,3 +1,6 @@
+// Scripts to handle updating view
+//
+
 // UPDATE: does this script need to handle the return json?
 // Loop through checkboxes and get find checked item send
 // request to update completed value in database
