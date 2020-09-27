@@ -10,32 +10,33 @@
     
 </head>
 <body>
-    <div class="title-background-container"> 
-        <div><h1>TO DO LIST</h1></div>
+<div class="center">
+    <div class="title-background-container" style="background-image:url('/static/images/best-free-cherry-blossom-clipart-30.png')";> 
+        <div><h2 id="app-title">My Brain Dump...</h2></div>
         <div class="master-container">
             <div class="lists-container">
                 <!-- temp code place holder-->
-                <div style="margin:10px;">
-                    <label style="text-align:center;">Todo lists</label>
+                <div>
+                    <h4>Todo Lists</h4>
                     <div class="form-add-list">
                         <!--form id="form" action="/todolist/create" method="post"> This one for using form/submit w/o ajax-->
                             <form id="form-add-list">
-                                <input type="text" value="New list" id="listname" name="listname" class="listname">
-                                <input type="submit" value="Add" class="rounded-corners">
+                                <div>
+                                    <input type="text" placeholder="New list" id="listname" name="listname" class="listname" maxlength="20">
+                                    <input type="submit" value="&plus;" class="rounded-corners submit_add">
+                                </div>
                             </form>
                     </div>
                 </div>
-                <div>
+                <div class="list-content-wrapper">
                     <ul class="lists">   
                         {% for list in lists %}
                             <li class="list">
-                                <div class="list-content-wrapper">
-                                    <input  type="checkbox" class="checkbox-completed-list" data-id="{{ list.id }}" {% if list.completed %} checked {% endif %}>   
-                                    <a class="list-link" href="/lists/{{ list.id }}">{{ list.name }} </a>
-                                    <button class="delete-list-button" data-id="{{ list.id }}">&cross;</button>
-                               </div>
+                                <input  type="checkbox" class="checkbox-completed-list" data-id="{{ list.id }}"  {% if list.completed %} checked {% endif %}>   
+                                <a class="list-link" id="{{ list.id }}" href="/lists/{{ list.id }}">{{ list.name }} </a>
+                                <button class="delete-list-button" data-id="{{ list.id }}">&cross;</button>
                             </li>
-                        {% endfor %}   
+                        {% endfor %}  
                     </ul>
                 </div>
             </div>
@@ -45,27 +46,28 @@
                 <div class="form-add-todo">
                 <!--form id="form" action="/todos/create" method="post"> This one for using form/submit w/o ajax-->
                     <form id="form-add-todo">
-                        <input type="text" value="New Todo item" id="description" name="description" class="description" data-id="{{ active_list.id }}">
-                        <input type="submit" value="Add" class="rounded-corners">
+                        <div>
+                            <input type="text" placeholder="New todo item" id="description" name="description" class="description" data-id="{{ active_list.id }}" maxlength="25">
+                            <input type="submit" value="&plus;" class="rounded-corners submit_add">
+                        </div>
                     </form>
                 </div>
                 <div id="error" class="hidden">Something went wrong!</div>
-                <div>
+                <div class="todo-content-wrapper">
                     <ul id="todos">
                         {% for todo in todos %}
-                        <div class="todo-content-wrapper">
                             <li class="list-item">
                             <input  type="checkbox" class="checkbox-completed-item" data-id="{{ todo.id }}" {% if todo.completed %} checked {% endif %}>
                             {{ todo.description }}
                             <button class="delete-item-button" data-id="{{ todo.id }}">&cross;</button>
-                            </li>
-                        </div>                                
+                            </li>                               
                         {% endfor %}   
                     </ul>
                 </div>
             </div>
         </div>
     </div>
+</div>
     <!-- call script to update page -->
     <script type="application/x-javascript" src="../static/js/todolist.js"></script>     
 </body>

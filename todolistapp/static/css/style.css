@@ -1,17 +1,45 @@
  
   
  body{
-   font-family: Arial, sans-serif;
-   font-size:15px;
+   font-family: Verdana, sans-serif;
  }
+
+ html, body {
+   width: 100%;
+   height: 100%;
+   padding: 0;
+   margin: auto;
+}
 
  h1, h2, h3, h4, h5, h6{
    margin-top: 0;
    margin-bottom: 5px;
 }
 
+/* to center web site */
+.center {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 600px;
+ }
+
+#app-title {
+   margin:auto;
+   vertical-align: middle;
+   padding-bottom: 10px;
+}
+
  .hidden {
     display: none;
+ }
+
+ .submit_add {
+    background-color:transparent;
+    cursor:pointer;
+    border:none;
+    font-size:20px;
+    vertical-align:middle;
  }
 
  .list-link{
@@ -20,32 +48,39 @@
     width: 125px;
    }
  .list-link:hover {color:yellow;}
+ .list-link:active { color:yellow;}
 
 .title-background-container{
    display:flex;
    flex-direction:column;
    align-items:center;
    background-color:slategray;
-   width:650px;
+   background-image:url("/static/images/best-free-cherry-blossom-clipart-30.png");
+   background-size:cover;
    border-radius: 15px;
+   border-style:solid;
+   border-color:maroon;
+   border-width:3px;
    padding:20px;
+   margin:auto;
 }
 
 .master-container{
   display:flex;
   flex-direction: row; /*default*/
   align-items:stretch;
-  background-color: orange;
+ /* background-color: #DB7093; */
+  background:linear-gradient(to right, rgba(219,112,147,0.5), rgba(219,112,147,0.5));
   border-radius:15px;
   border-style:solid;
-  border-width:5px;
-  width: 650px;
+  border-width:2px;
+  width: 90%px;
 }
 
 .lists-container{
-   background-color:plum;
+   background-color:lightpink;
    border-radius:15px;
-   width: 250px;
+   width: 225px;
    margin: 10px;
    margin-right:5px;
    margin-left:10px;
@@ -54,48 +89,44 @@
 .list-container {
     margin: 10px;
     margin-left:12px;
-    padding: 20px;
-    background-color: #b3ccff;  /* bluish */
+    padding: 10px;
+    background-color:#D8BFD8; /* plum;  */
     border-radius: 15px;
-    width:350px;
+    width:225px;
 }
 
 .list-content-wrapper, .todo-content-wrapper {
-   width:175px;
-}
-
-.todo-content-wrapper {
-   width:200px;
+   width:220px;
 }
 
 .form-add-todo {
    padding:0px;
-   margin:0px;
-   width: 275px;
+   margin:auto;
+   width: 85%;
 }
 
 .form-add-list {
    padding:0px;
-   margin:0px;
-   width: 175px;
+   margin: auto;
+   width: 85%;
 }
 
 ul {
    list-style: none;
    padding: 0;
    margin: 10px;
-   width:220px
+   width:220px;
 }
  
-li.list {
-   width: 125px;
+li.list, li.list-item {
+   width: 200px;
+   font-size:12px;
 }
 
 .delete-item-button, .delete-list-button {
    -webkit-appearance: none;
    height: 15px;
    width: 15px;
-   float: right;
    color: red;
    margin: 0;
    padding: 0;
@@ -106,7 +137,7 @@ li.list {
    font-size:15px;
    border-radius:2px;
    background-color:transparent;
-   display:inline-block;
+   float: right;
 }
 
 .checkbox-completed-list, .checkbox-completed-item {
@@ -115,9 +146,16 @@ li.list {
   float: left;
 }
  
-.description {
-  width: 200px;
+.description, .listname {
+  margin:auto;
+  width:75%;
   border-radius: 2px;
+  font-size: 9px;
+}
+
+input::placehoder {
+   opacity:0.25;
+   color:lightgray;
 }
 
 .rounded-corners {

@@ -28,8 +28,6 @@ class TodoList(db.Model):
    completed = db.Column(db.Boolean, nullable=False, default=False)
    todos = db.relationship('Todo', backref='todolist', cascade="all, delete-orphan", lazy=True)  #Lazy be default 
 
-   
-
    def __repr__(self):
        return f'<TodoList {self.id} {self.name}>'
 
@@ -46,6 +44,27 @@ class Todo(db.Model):
 
 #  using migrations now .... don' use db.create_all()
 
+################ Messing around with many to many db relationships #######
+## not part of todo app
+##  
+order_items = db.Table('order_items',
+    db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True)
+)
+
+class Order(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  status = db.Column(db.String(), nullable=False)
+  products = db.relationship('Product', secondary=order_items,
+      backref=db.backref('orders', lazy=True))
+
+class Product(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(), nullable=False)
+
+###################end many to many ######################
+
+
 # Home Page  
 @app.route('/lists/<list_id>')
 def get_list_todos(list_id):
@@ -53,7 +72,7 @@ def get_list_todos(list_id):
    return  render_template('index.html', 
       todos=Todo.query.filter_by(list_id=list_id).all(), 
       active_list=TodoList.query.get(list_id),
-      lists=TodoList.query.all())
+      lists=TodoList.query.order_by(TodoList.id).all())
 
 @app.route('/')
 def index():

@@ -5,6 +5,7 @@
 // Loop through checkboxes and get find checked item send
 // request to update completed value in database
 //should refresh view
+//todo complete checkboxes
 const itemcheckboxes = document.querySelectorAll('.checkbox-completed-item');
      
 for (let i = 0; i < itemcheckboxes.length; i++) {
@@ -14,6 +15,34 @@ for (let i = 0; i < itemcheckboxes.length; i++) {
     const newCompleted = e.target.checked;
     const todoId = e.target.dataset['id'];
     fetch('/todos/' + todoId + '/set-completed', {
+      method: 'POST',
+      body: JSON.stringify({
+        'completed': newCompleted
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(function() {
+      document.getElementById('error').className = 'hidden';
+    })
+    .catch(function() {
+      document.getElementById('error').className = '';
+    });
+  };
+}
+// List complete checkboxes
+const listcheckboxes = document.querySelectorAll('.checkbox-completed-list');
+     
+for (let i = 0; i < listcheckboxes.length; i++) {
+ 
+  const checkbox = listcheckboxes[i];
+  checkbox.onchange = function(e) {
+    const newCompleted = e.target.checked;
+    const listId = e.target.dataset['id'];
+    document.getElementById(listId).classList.add("list-link:active");
+  
+    fetch('/lists/' + listId + '/set-completed', {
       method: 'POST',
       body: JSON.stringify({
         'completed': newCompleted
@@ -103,6 +132,7 @@ document.getElementById('form-add-todo').onsubmit = function(e) {
              console.log(liItem);
              document.getElementById("todolist").appendChild(liItem);
              console.log(document.getElementById("todos"));
+             location.reload();
              })
      .catch(function() {
          document.getElementById("error").className="";
@@ -127,12 +157,20 @@ document.getElementById('form-add-list').onsubmit = function(e) {
    .then(function(jsonResponse) {
            document.getElementById("error").className="hidden";
            //console.log(jsonResponse);  
+
            const id = jsonResponse.id;                               
            const liItem = document.createElement('li');
-           liItem.className="list";
-           liItem.innerHTML = `<div class="list-content-wrapper"><input type="checkbox" data-id=${id} class="checkbox-completed-list">${jsonResponse.name}<button class="delete-list-button" data-id=${id}>&cross;</button></div>`;
+           liItem.innerHTML = jsonResponse['name'];
+           document.getElementById('lists').appendChild(liItem);
+           location.reload();
+
+
+           
+           //liItem.className="list";
+           //liItem.innerHTML = `<div class="list-content-wrapper"><input type="checkbox" data-id=${id} class="checkbox-completed-list">${jsonResponse.name}<button class="delete-list-button" data-id=${id}>&cross;</button></div>`;
            //console.log(liItem);
-           document.getElementById("lists").appendChild(liItem);
+           //document.getElementById("lists").appendChild(liItem);
+           //window.location(true);
            //console.log(document.getElementById("todolist"));
            })
    .catch(function() {
@@ -140,32 +178,3 @@ document.getElementById('form-add-list').onsubmit = function(e) {
    });
 };
 
-// UPDATE: does this script need to handle the return json?
-// Loop through checkboxes and get find checked item send
-// request to update completed value in database
-//should refresh view
-const listcheckboxes = document.querySelectorAll('.checkbox-completed-list');
-     
-for (let i = 0; i < listcheckboxes.length; i++) {
- 
-  const checkbox = listcheckboxes[i];
-  checkbox.onchange = function(e) {
-    const newCompleted = e.target.checked;
-    const listId = e.target.dataset['id'];
-    fetch('/lists/' + listId + '/set-completed', {
-      method: 'POST',
-      body: JSON.stringify({
-        'completed': newCompleted
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(function() {
-      document.getElementById('error').className = 'hidden';
-    })
-    .catch(function() {
-      document.getElementById('error').className = '';
-    });
-  };
-}
