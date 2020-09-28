@@ -7,6 +7,7 @@ import dateutil.parser
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
@@ -19,9 +20,22 @@ from forms import *
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
+
+
+# TODO: connect to a local postgresql database which has already been created
+# using dbcreate (postgresql) and verified with psql
+
+# Database connection info in config.py to keep specifics of database
+# separate from model
+# bind SQLAlchemy database object to this specific flask App
 db = SQLAlchemy(app)
 
-# TODO: connect to a local postgresql database
+# Connect database and Model to migration object
+# Run commands flask db init to create migrations folder
+#              flask db migrations -m "SOME MESSAGE like Initial Migration"
+#              Preview changes in the migration file for accuracy
+#              flask db upgrade to actually  update the database with schema changes
+migrate = Migrate(app,db)
 
 #----------------------------------------------------------------------------#
 # Models.
