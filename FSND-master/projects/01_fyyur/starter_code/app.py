@@ -41,33 +41,52 @@ migrate = Migrate(app,db)
 # Models.
 #----------------------------------------------------------------------------#
 
-class Venue(db.Model):
-    __tablename__ = 'Venue'
+class Area(db.Model):
+    __tablename__ = 'area'
+   
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    city = db.Column(db.String(120), nullable=False)
+    state = db.Column(db.String(120), nullable=False)
+    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
+    def __repr__(self):
+      return f'<Area {self.id} {self.city} {self.state}>'
+
+class Venue(db.Model):
+    __tablename__ = 'venue'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    city = db.Column(db.String(120), nullable=False)
+    state = db.Column(db.String(120), nullable=False)
+    address = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(120), nullable=False)
+    image_link = db.Column(db.String(500), nullable=False)
+    facebook_link = db.Column(db.String(120), nullable=False)
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+
+    def __repr__(self):
+      return f'<Venue {self.id} {self.name}>'
 
 class Artist(db.Model):
-    __tablename__ = 'Artist'
+    __tablename__ = 'artist'
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    city = db.Column(db.String(120), nullable=False)
+    state = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(120), nullable=False)
+    genres = db.Column(db.String(120), nullable=False)
+    image_link = db.Column(db.String(500), nullable=False)
+    facebook_link = db.Column(db.String(120), nullable=False)
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+
+    def __repr__(self):
+       return f'<Artist {self.id} {self.name}>'
+
+
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
@@ -89,40 +108,72 @@ app.jinja_env.filters['datetime'] = format_datetime
 # Controllers.
 #----------------------------------------------------------------------------#
 
-@app.route('/')
 def index():
   return render_template('pages/home.html')
 
 
 #  Venues
 #  ----------------------------------------------------------------
-
 @app.route('/venues')
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
-  return render_template('pages/venues.html', areas=data);
+  #
+  # Returns list of dictionaries of areas and venues and number of upcoming shows per venue. 
+  # data has format like:
+  #data=[{
+  #  "city": "San Francisco",
+  #  "state": "CA",
+  #  "venues": [{
+  #    "id": 1,
+  #    "name": "The Musical Hop",
+  #    "num_upcoming_shows": 0,
+  #  }, {
+  #    "id": 3,
+  #    "name": "Park Square Live Music & Coffee",
+  #    "num_upcoming_shows": 1,
+  #  }]
+  #}, {
+  #  "city": "New York",
+  #  "state": "NY",
+  #  "venues": [{
+  #    "id": 2,
+  #    "name": "The Dueling Pianos Bar",
+  #    "num_upcoming_shows": 0,
+  #  }]
+  #}]
+  #
+  #
+
+  # WHere the list of venues and areas will be stored to pass back to view
+  data = []
+
+  # Get list of cities and state -- areas 
+  result_areas = Venue.query.with_entities(Venue.city, Venue.state).distinct().all()
+  print ("areas:  ", result_areas)
+
+  for area in result_areas:  
+      venues=[]         #new venues list for this new area
+      data_dict = {}    #create new temp dict for each area and venues list
+      data_dict['city']=area[0]    
+      data_dict['state']=area[1]
+
+      #Get list of venues by city,state
+      venues_for_one_city =\
+        Venue.query.filter_by(city=area[0], state=area[1]).all()
+          
+      for v in venues_for_one_city:
+         venue = {}
+         venue["id"] = v.id
+         venue["name"] = v.name   
+         venue["num_upcoming_shows"] = 1   #still need to add this colomn to Venue model    
+         venues.append(venue) 
+         data_dict['venues']=venues
+  
+      # add area to data that will be passed to views
+      data.append(data_dict)  
+
+  return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -167,7 +218,7 @@ def show_venue(venue_id):
     "upcoming_shows_count": 0,
   }
   data2={
-    "id": 2,
+    "id": 6,
     "name": "The Dueling Pianos Bar",
     "genres": ["Classical", "R&B", "Hip-Hop"],
     "address": "335 Delancey Street",
@@ -184,7 +235,7 @@ def show_venue(venue_id):
     "upcoming_shows_count": 0,
   }
   data3={
-    "id": 3,
+    "id": 7,
     "name": "Park Square Live Music & Coffee",
     "genres": ["Rock n Roll", "Jazz", "Classical", "Folk"],
     "address": "34 Whiskey Moore Ave",
@@ -220,7 +271,50 @@ def show_venue(venue_id):
     "past_shows_count": 1,
     "upcoming_shows_count": 1,
   }
-  data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+
+  data4={
+      "id": 10,
+      "name": "The Dueling Pianos Bar",
+      "genres": ["Classical", "R&B", "Hip-Hop"],
+      "address": "335 Delancey Street",
+      "city": "New York",
+      "state": "NY",
+      "phone": "914-003-1132",
+      "website": "https://www.theduelingpianos.com",
+      "facebook_link": "https://www.facebook.com/theduelingpianos",
+      "seeking_talent": False,
+      "image_link": "https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80",
+      "past_shows": [],
+      "upcoming_shows": [],
+      "past_shows_count": 0,
+      "upcoming_shows_count": 0,
+    }
+
+  data5={
+        "id": 12,
+        "name": "The Potato Tacos Bar",
+        "genres": ["Classical", "R&B", "Hip-Hop"],
+        "address": "335 Delancey Street",
+        "city": "New York",
+        "state": "NY",
+        "phone": "914-003-1132",
+        "website": "https://www.theduelingpianos.com",
+        "facebook_link": "https://www.facebook.com/theduelingpianos",
+        "seeking_talent": False,
+        "image_link": "https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80",
+        "past_shows": [],
+        "upcoming_shows": [],
+        "past_shows_count": 0,
+        "upcoming_shows_count": 0,
+      }
+
+    
+
+  # filter filters out data from dta1, data2, data3 that is not associated with 
+  # venue id passed in (venue_id)  But we won't use use this when we pass back data from
+  # database query
+  
+  data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3, data4,data5]))[0]
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
