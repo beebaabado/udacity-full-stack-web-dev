@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask_wtf import FlaskForm #changed to FlaskForm from Form...makes warning go away
+from flask_wtf import FlaskForm 
 from wtforms import StringField, SelectField, SelectMultipleField, BooleanField, TextField, DateTimeField
 from wtforms.validators import DataRequired, AnyOf, URL, Length
 
@@ -93,7 +93,7 @@ class VenueForm(FlaskForm):
     )
     image_link = StringField(
         'Image', validators=[URL()],
-         default="/static/img/DefaultArtistImage.png"
+         default="/static/img/DefaultArtistImage.jpeg"
     )
     facebook_link = StringField(
         'Facebook', validators=[URL()],
@@ -211,7 +211,7 @@ class ArtistForm(FlaskForm):
 
     image_link = StringField(
         'Image', validators=[URL()],
-        default="/static/img/DefaultArtistImage.png"
+        default="/static/img/DefaultArtistImage.jpeg"
     )
     facebook_link = StringField(
         # TODO implement enum restriction
