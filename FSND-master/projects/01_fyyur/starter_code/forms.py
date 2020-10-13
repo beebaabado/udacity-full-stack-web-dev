@@ -2,23 +2,32 @@ from datetime import datetime
 from flask_wtf import FlaskForm 
 from wtforms import StringField, SelectField, SelectMultipleField, BooleanField, TextField, DateTimeField
 from wtforms.validators import DataRequired, AnyOf, URL, Length
-
-
+from wtforms.fields.html5 import DateField, TimeField
 
 # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
 
 class ShowForm(FlaskForm):
     # Create/Edit show form
-    artist_id = StringField(
-        'Artist Id', validators=[DataRequired()]
+    artist_id = SelectField(
+        'Artist', validators=[DataRequired()] 
     )
-    venue_id = StringField(
-        'Venue Id', validators=[DataRequired()]
+    venue_id = SelectField(
+        'Venue', validators=[DataRequired()]
     )
-    start_time = DateTimeField(
-        'Start time',
+    description = TextField(
+        'Description', 
         validators=[DataRequired()],
-        default= datetime.today()
+        default="Show description"
+    )
+    datepicker = DateField (
+        'Date', validators=[DataRequired()],
+        format='%Y-%m-%d', 
+        default=datetime.now()
+    )
+    timepicker = TimeField (
+        "Time", validators=[DataRequired()],
+        format='%H:%M', 
+        default=datetime.now()
     )
 
 class VenueForm(FlaskForm):

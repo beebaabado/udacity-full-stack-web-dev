@@ -206,49 +206,4 @@ h2.monospace {
 .form-inline .form-control {
   width: 100%;
 }
-.subtitle {
-  opacity: 0.5;
-  margin-top:10px;
-  padding-top:10px;
-}
 
-.profile-title {
-  margin-bottom:0px;
-}
-
-a.no-underline{
-  border:0px;
-  text-decoration:none;
-}
-a:hover{
-  color:green;
-}
-.my-icon {
-  color:orange;
-  font-size:28px;
-  vertical-align: top;
-  text-decoration:none;
-}
-
-.my-icon:hover {
-  color:green;
-}
-.btn-square {
-  width:32px;
-  height:32px;
-  background-color:transparent;
-  border:none;
-}
-
-.flex-container {
-  display: flex;
-  flex-direction: row;
-  height:32px;
-}
-
-.flex-container > div {
-  vertical-align: center;
-  text-align: center;
-  height: 32px;
-  font-size: 32px;
-}

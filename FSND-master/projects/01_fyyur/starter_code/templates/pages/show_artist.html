@@ -3,13 +3,21 @@
 {% block content %}
 <div class="row">
 	<div class="col-sm-6">
-		<h1 class="monospace">
-			{{ artist.name }}
-			<a href="/artists/{{ artist.id }}/edit"><span class="glyphicon glyphicon-pencil icon-size"></span></a>		
-		</h1>
-		<p class="subtitle">
-			ID: {{ artist.id }}
-		</p>
+		<div>
+			<div class="flex-container">
+				<div>
+					<h1 class="monospace" class="profile-title">
+					    {{ artist.name }} 
+					</h1>	
+				</div>
+				<div>
+					<a href="/artists/{{ artist.id }}/edit" class="no-underline" style="display:inline; margin-right:5px">
+					<button class="btn btn-sm btn-square" data-toggle="tooltop" title="Edit profile" data-placement="top"><i class="my-icon">&#9998;</i></button>
+					</a>
+				</div>
+			</div>
+			<h6 class="subtitle">Artist ID: {{ artist.id }}</h6>
+		</div>		
 		<div class="genres">
 			{% for genre in artist.genres %}
 			<span class="genre">{{ genre }}</span>

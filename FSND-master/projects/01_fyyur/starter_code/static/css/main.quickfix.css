@@ -7,3 +7,69 @@
  * main.css.
  */
 
+ .subtitle {
+    opacity: 0.5;
+    margin-top:10px;
+    padding-top:10px;
+  }
+  
+  .profile-title {
+    margin-bottom:0px;
+  }
+  
+  a.no-underline{
+    border:0px;
+    text-decoration:none;
+  }
+  a:hover{
+    color:green;
+  }
+  .my-icon {
+    color:orange;
+    font-size:28px;
+    vertical-align: top;
+    text-decoration:none;
+  }
+  
+  .my-icon:hover {
+    color:green;
+  }
+  .btn-square {
+    width:32px;
+    height:32px;
+    background-color:transparent;
+    border:none;
+  }
+  
+  .flex-container {
+    display: flex;
+    flex-direction: row;
+    height:32px;
+  }
+  
+  .flex-container > div {
+    vertical-align: center;
+    text-align: center;
+    height: 32px;
+    font-size: 32px;
+  }
+  
+  /* remove the blue outline and shadow on the icon-button for edit and delete */
+  .btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* use to hide invalid show time message */
+  .hidden {
+    display: none;
+ }
+
+ .info {
+   line-height: 80%;
+   margin:2px;
+ }
+
+ .artist-time-message {
+   font-size: 11px;
+ }
