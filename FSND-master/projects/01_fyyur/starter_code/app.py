@@ -135,7 +135,10 @@ app.jinja_env.filters['datetime'] = format_datetime
 # Default Route...index
 @app.route('/')
 def index():
-  return render_template('pages/home.html')
+  # Get first 10 recently listed artists and venues
+  artists = Artist.query.with_entities(Artist.id, Artist.name).order_by(Artist.id.desc()).limit(10)
+  venues = Venue.query.with_entities(Venue.id, Venue.name).order_by(Venue.id.desc()).limit(10)
+  return render_template('pages/home.html', artists=artists, venues=venues)
 
 #----------------------------------------------------------------------------#
 #  VENUES
@@ -199,20 +202,33 @@ def search_venues():
   response={}   #what to return to view
   # search_term =request.get_json()['search_term']
   search_term=request.form.get('search_term', '')
-  venue_search_results = Venue.query.with_entities(Venue.id, Venue.name).\
-    filter(Venue.name.ilike('%' + search_term + '%')).all() # NOTE TO SELF:  returns an array of tuples (immutable)
+  # see if user is searching by city and state
+  # not so elegant but look for comma then split 
+  # in to city and state.  Query for venue filter on city and state
+  venue_search_results = []
+  if (search_term.find(",")) != -1:
+     parts = search_term.split(",")
+     city = parts[0].strip()
+     state = parts[1].strip()
+     print(city, state)
+     venue_search_results = Venue.query.with_entities(Venue.id, Venue.name).filter(Venue.city==city, Venue.state==state).order_by(Venue.name).all() 
+
+  # if no results try a query on venue name.
+  if len(venue_search_results) == 0:
+     venue_search_results = Venue.query.with_entities(Venue.id, Venue.name).\
+      filter(Venue.name.ilike('%' + search_term + '%')).order_by(Venue.name).all() # NOTE TO SELF:  returns an array of tuples (immutable)
   response['count'] = len(venue_search_results)
   response['data'] = []
-  
-  for item in venue_search_results:
+ 
+  for venue in venue_search_results:
     newdataitem = {
-      "id": item.id,
-      "name": item.name,
-      "num_upcoming_shows": 0  # Need to do new query for this number against shows...sometype of aggregate JOIN ???
+      "id": venue.id,
+      "name": venue.name,
+      "num_upcoming_shows": Show.query.filter(Show.venue_id == venue.id, Show.start_time > datetime.utcnow()).count()
     } 
     response['data'].append(newdataitem)
     
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+  return render_template('pages/search_venues.html', results=response, search_term=search_term)
 
 #~~~~~~~~Get Venue by id ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -275,9 +291,10 @@ def create_venue_submission():
         form = request.form
         # translate to boolean
         seeking_talent = False
-        if form['seeking_talent']=='y': 
-          seeking_talent = True
-      
+        if ('seeking_talent' in form):
+           if (form['seeking_talent']) =='y': 
+             seeking_talent = True
+  
         #do something with user input data
         if (form):
            newVenue = Venue(name=form['name'])
@@ -334,7 +351,6 @@ def edit_venue(venue_id):
   venueForm.facebook_link.data = data.facebook_link
   venueForm.seeking_talent.data = data.seeking_talent
   venueForm.seeking_description.data = data.seeking_description
-
   #show pre populated form  
   return render_template('forms/edit_venue.html', form=venueForm,  venue=data)
 
@@ -350,9 +366,10 @@ def edit_venue_submission(venue_id):
         form = request.form
         # translate to boolean
         seeking_talent = False
-        if form['seeking_talent']=='y': 
-          seeking_talent = True
-      
+        if ('seeking_talent' in form):
+           if (form['seeking_talent']) =='y': 
+             seeking_talent = True
+   
         #update existing Venue data
         if (form):
            existingVenue.name = form['name']
@@ -536,7 +553,9 @@ def edit_artist(artist_id):
   artistForm.facebook_link.data = data.facebook_link
   artistForm.seeking_venue.data = data.seeking_venue
   artistForm.seeking_description.data = data.seeking_description
-  
+  artistForm.available_start_time.data = data.time_available_start
+  artistForm.available_stop_time.data = data.time_available_stop
+
   #show pre populated form 
   return render_template('forms/edit_artist.html', form=artistForm, artist=data)
 
@@ -548,12 +567,13 @@ def edit_artist_submission(artist_id):
     try:
         existingArtist = Artist.query.get(artist_id) 
         form = request.form
-        
+        print(form)
         # translate to boolean
         seeking_venue = False
-        if form['seeking_venue']=='y': 
-          seeking_venue = True
-      
+        if ('seeking_venue' in form):
+           if (form['seeking_venue']) =='y': 
+             seeking_venue = True
+  
         #update existing Venue data
         if (form):
            existingArtist.name = form['name']
@@ -566,6 +586,8 @@ def edit_artist_submission(artist_id):
            existingArtist.facebook_link = form['facebook_link']
            existingArtist.seeking_venue = seeking_venue
            existingArtist.seeking_description = form['seeking_description']
+           existingArtist.time_available_start = form['available_start_time']
+           existingArtist.time_available_stop = form['available_stop_time']
            db.session.commit() 
     except:
         error = True
@@ -605,11 +627,10 @@ def create_artist_submission():
 
     error = False
     try:
-        form = request.form       
-        
+        form = request.form      
         # translate to boolean
         seeking_venue = False
-        if (form['seeking_venue']):
+        if ('seeking_venue' in form):
            if (form['seeking_venue']) =='y': 
              seeking_venue = True
 
@@ -625,6 +646,8 @@ def create_artist_submission():
            newArtist.facebook_link = form['facebook_link']
            newArtist.seeking_venue = seeking_venue
            newArtist.seeking_description = form['seeking_description']
+           newArtist.time_available_start = form['available_start_time']
+           newArtist.time_available_stop = form['available_stop_time']
            db.session.add(newArtist)
            db.session.commit()
     except:
@@ -644,6 +667,49 @@ def create_artist_submission():
         flash('Artist ' + request.form['name'] + ' was successfully listed!')
         #refresh
         return render_template('pages/home.html')
+
+#~~~~~~~~DELETE: Delete a Artist ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+@app.route('/artists/<artist_id>/delete', methods=['DELETE'])
+def delete_artist(artist_id):
+  # TODO: Complete this endpoint for taking a venue_id, and using
+  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
+  # clicking that button delete it from the db then redirect the user to the homepage
+  error = False
+  try:
+    print("Begin Try Delete artist id: ", artist_id)
+    artist=Artist.query.get(artist_id)
+    name =artist.name
+    #delete shows
+    Show.query.filter(Show.artist_id==artist_id).delete()
+    #delete artist
+    db.session.delete(artist)
+    #can also write as ... I think maybe allows for deleting more than one row...avoid builtin.list error?
+    #Venues.query.filter_by(id=artist_id).delete()
+    db.session.commit()
+    print("Delete Artist id:  committed", artist_id)
+  except:  
+     #print("Delete Artist:  error...rollback")  
+     error = True
+     db.session.rollback()
+     #print(sys.exc_info())
+  finally:
+     #print("Delete Artist:  FINALLY")
+     db.session.close()
+   
+  if error:
+     # TODO: on unsuccessful db delete, flash an error instead.  
+     #print("YES ERROR in deleting artist ...show artist again.") 
+     flash('An error occurred. Artist ' + name + ' could not be deleted.')
+     return redirect(url_for('delete_artist', artist_id=artist_id))
+  else: 
+     # on successful db delete, flash success
+     # print("Successful in deleting artist ...go home.") 
+     #NOTE to self: Server side redirects in delete handlers are not recommended
+     flash('Artist ' + name + ' was successfully deleted!')
+     return jsonify({ 'success': True })
+  
+  return render_template('/') #Does this ever get called????
 
 
 #  ---------------------------------------------------------------
@@ -668,8 +734,8 @@ def shows():
         "artist_id": s.artist.id,
         "artist_name": s.artist.name,
         "artist_image_link": s.artist.image_link,
-        "artist_time_available_start": s.artist.time_available_start,
-        "artist_time_available_stop": s.artist.time_available_stop,
+        "artist_time_available_start": s.artist.time_available_start.isoformat(),
+        "artist_time_available_stop": s.artist.time_available_stop.isoformat(),
         "description":s.description,
         "start_time": s.start_time.isoformat() #returned as datetime...converted to iso datetime
       }  
@@ -708,7 +774,6 @@ def create_show_submission():
       newShow.venue_id = form['venue_id']
       newShow.artist_id = form['artist_id']
       newShow.start_time = form['datepicker'] + ' ' + form['timepicker'] 
-      print ("new show time: " , newShow.start_time)
       newShow.description = form['description']
     db.session.add(newShow)
     db.session.commit()

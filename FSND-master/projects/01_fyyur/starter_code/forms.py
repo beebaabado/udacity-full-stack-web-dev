@@ -21,13 +21,11 @@ class ShowForm(FlaskForm):
     )
     datepicker = DateField (
         'Date', validators=[DataRequired()],
-        format='%Y-%m-%d', 
-        default=datetime.now()
+        format='%Y-%m-%d'
     )
     timepicker = TimeField (
         "Time", validators=[DataRequired()],
-        format='%H:%M', 
-        default=datetime.now()
+        format='%H:%M'
     )
 
 class VenueForm(FlaskForm):
@@ -251,6 +249,16 @@ class ArtistForm(FlaskForm):
             ('Soul', 'Soul'),
             ('Other', 'Other'),
         ]
+    )
+    available_start_time = DateTimeField(
+        'Available time start',
+        validators=[DataRequired()],
+        default=datetime.now()
+    )
+    available_stop_time = DateTimeField(
+        'Available time end',
+         validators=[DataRequired()],
+        default=datetime.now()
     )
     seeking_venue = BooleanField(
         'Seeking Venue',

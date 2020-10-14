@@ -40,6 +40,14 @@
             <label for="image_link">{{ form.image_link.label }}</label>
             {{ form.image_link(class_ = 'form-control', placeholder='http://', id='image_link', autofocus = true) }}
       </div>
+      <div class="form-group">
+        <label for="available_start_time">{{ form.available_start_time.label }}</label>
+        {{ form.available_start_time(class_ = 'form-control', placeholder='', id='available_start_time', autofocus = true) }}
+      </div>
+      <div class="form-group">
+        <label for="available_stop_time">{{ form.available_stop_time.label }}</label>
+        {{ form.available_stop_time(class_ = 'form-control', placeholder='', id='available_stop_time', autofocus = true) }}
+      </div>
       <div class="form-check">
             {{ form.seeking_venue(class_ = 'form-check-input', placeholder='true', id='seeking_venue', autofocus = true) }}
             <label for="seeking_venue">{{ form.seeking_venue.label }}</label>

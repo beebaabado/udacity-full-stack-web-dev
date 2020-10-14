@@ -41,19 +41,27 @@
     border:none;
   }
   
-  .flex-container {
+  .flex-container-btns {
     display: flex;
     flex-direction: row;
     height:32px;
   }
   
-  .flex-container > div {
+  .flex-container-btns> div {
     vertical-align: center;
     text-align: center;
     height: 32px;
     font-size: 32px;
   }
   
+  .flex-container-list {
+    display:flex;
+    flex-direction: row;
+    height:auto;
+    flex-grow: 1; /* equally sized */
+    flex-wrap: nowrap;
+  }
+
   /* remove the blue outline and shadow on the icon-button for edit and delete */
   .btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
     outline: none;
@@ -65,11 +73,16 @@
     display: none;
  }
 
+ .show-error-message {
+   color: red;
+ }
+
  .info {
    line-height: 80%;
    margin:2px;
  }
 
  .artist-time-message {
-   font-size: 11px;
+   font-size: 10px;
+   color: gray
  }

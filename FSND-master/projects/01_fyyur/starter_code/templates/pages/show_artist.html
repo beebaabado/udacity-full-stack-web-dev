@@ -4,7 +4,7 @@
 <div class="row">
 	<div class="col-sm-6">
 		<div>
-			<div class="flex-container">
+			<div class="flex-container-btns">
 				<div>
 					<h1 class="monospace" class="profile-title">
 					    {{ artist.name }} 
@@ -14,6 +14,9 @@
 					<a href="/artists/{{ artist.id }}/edit" class="no-underline" style="display:inline; margin-right:5px">
 					<button class="btn btn-sm btn-square" data-toggle="tooltop" title="Edit profile" data-placement="top"><i class="my-icon">&#9998;</i></button>
 					</a>
+					<button class="btn btn-sm btn-square"  id="delete-artist-button" data-toggle="tooltop" title="Delete profile" data-placement="top" data-id="{{ artist.id }}">
+						<span class="my-icon"data-id="{{ artist.id }}">&#x2715;</span>
+					</button>
 				</div>
 			</div>
 			<h6 class="subtitle">Artist ID: {{ artist.id }}</h6>
@@ -81,5 +84,31 @@
 	</div>
 </section>
 
+<!--
+	DELETE: Use the following to route to DELETE endpoint
+	as I am not sure how else to do this right now.  -->
+	<script type="application/x-javascript">
+	
+		const deleteArtist = document.getElementById('delete-artist-button');	
+		deleteArtist.onclick = function(e) { 
+			const artist_id = e.target.dataset['id'];
+			if (artist_id) {
+				if (confirm('Are you sure you want to delete this artist ',  artist_id,  ' ?') == true) {		//Need to replace with something nicer...
+					//console.log("Attempting to delete venue ", venue_id)
+					fetch('/artists/' + artist_id + '/delete', {
+						method: 'DELETE'
+					})
+					.then(function(response) {   
+						 console.log(response.ok);
+						 if (response.ok) {
+						   //console.log ("Returned from app.py delete route");
+						   window.location.replace("/");
+						 }
+					});
+				};
+			} ;
+		};
+		</script>
+		
 {% endblock %}
 

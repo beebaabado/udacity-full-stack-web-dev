@@ -26,25 +26,31 @@
         <p>
           <label class= info for="start_time">Start time</label> </br>
           <small class="info artist-time-message" for="avail_times" id="avail_start_times_label" data-start-time="{{ artist[0].time_available_start }}" data-stop-time="{{ artist[0].time_available_stop }}" >
-              Artist available times between {{ artist[0].time_available_start }} and {{ artist[0].time_available_stop }}
+              Artist available between {{ artist[0].time_available_start }} and {{ artist[0].time_available_stop }}
           </small>
           <small id=error class="hidden info">
             <strong>Please enter a time within Artist's available time frame.</strong>
           </small>
         </p> 
          <!-- date and time picker.  not the prettiest controls but works for this project-->
-        {{ form.datepicker(class_='datepicker', autofocus = true) }}
-        {{ form.timepicker(class_='timepicker', autofocus = true) }}
+        {{ form.datepicker(class_='datepicker', placeholder='MM/DD/YYYY', autofocus = true) }}
+        {{ form.timepicker(class_='timepicker', placehoder='HH:MM', autofocus = true) }}
       </div>
       <div class="form-group">
         <label for="description">{{ form.description.label }}</label>
         {{ form.description(class_ = 'form-control', autofocus = true) }}
       </div>
-      <input type="submit" value="Create Show" class="btn btn-primary btn-lg btn-block">
+      <input type="submit" id="submit-btn" value="Create Show" class="btn btn-primary btn-lg btn-block">
     </form>
   </div>
 
-<script>    
+<script>  
+// -----------------------------------------------------
+// document load disable submit button
+  window.onload = function(e){
+    document.getElementById("submit-btn").setAttribute("disabled", "disabled");
+  } 
+//------------------------------------------------------
     // check if artist choice changed 
     const artist_choice = document.getElementById('artist_id');	  
     artist_choice.onchange = function(e) { 
@@ -53,14 +59,14 @@
       var label_avail_times = document.getElementById('avail_start_times_label');
       if (label_avail_times) {
         const opt = artist_times.options[artist_times.selectedIndex];
-        const start = opt.getAttribute('data-start-time')
-        const stop = opt.getAttribute('data-stop-time')
+        const start = opt.getAttribute('data-start-time');
+        const stop = opt.getAttribute('data-stop-time');
         label_avail_times.setAttribute('data-start-time', start);
         label_avail_times.setAttribute('data-stop-time', stop);
-        label_avail_times.innerText = "Artist available times between " +  moment(start).format('LLLL'); + " and " + moment(stop).format('LLLL'); + ".";
+        label_avail_times.innerText = "Artist available between " +  moment(start).format('LLL') + " and " + moment(stop).format('LLL') + ".";
       }
-   };
-
+   }
+//---------------------------------------------------------
    // on time and date update validate that date/time is within artist available times
    const show_date = document.getElementById('datepicker');
    show_date.oninput = function(e) {
@@ -71,12 +77,15 @@
      const time1 = Date.parse(label_avail_times.getAttribute('data-start-time'));
      const time2 = Date.parse(label_avail_times.getAttribute('data-stop-time'));
      if ((start_datetime < time1) || (start_datetime > time2)) {
-      document.getElementById("error").className=""
-     }
-     else 
-      document.getElementById("error").className="hidden"
-   }
-
+      document.getElementById("error").className="show-error-message";
+      document.getElementById("submit-btn").setAttribute("disabled", "disabled");
+     }    
+     else {
+        document.getElementById("error").className="hidden";
+        document.getElementById("submit-btn").removeAttribute("disabled");
+      }
+  }   
+//----------------------------------------------------------------------   
    const show_time = document.getElementById('timepicker');
    show_time.oninput = function(e) {
      const start_time = show_time.value;
@@ -86,10 +95,13 @@
      const time1 = Date.parse(label_avail_times.getAttribute('data-start-time'));
      const time2 = Date.parse(label_avail_times.getAttribute('data-stop-time'));
      if ((start_datetime < time1) || (start_datetime > time2)) {
-      document.getElementById("error").className=""
-     }
-     else 
+      document.getElementById("error").className="";
+      document.getElementById("submit-btn").setAttribute("disabled", "disabled");
+     }     
+     else { 
       document.getElementById("error").className="hidden"
-   }
+      document.getElementById("submit-btn").removeAttribute("disabled");
+     }
+  }  
 </script>  
 {% endblock %}
