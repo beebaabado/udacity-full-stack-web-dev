@@ -45,9 +45,10 @@
     display: flex;
     flex-direction: row;
     height:32px;
+    flex-wrap: nowrap;
   }
   
-  .flex-container-btns> div {
+  .flex-container-btns > div.icons {
     vertical-align: center;
     text-align: center;
     height: 32px;

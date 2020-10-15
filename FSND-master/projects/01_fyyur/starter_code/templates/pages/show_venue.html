@@ -99,7 +99,8 @@ const deleteVenue = document.getElementById('delete-venue-button');
 deleteVenue.onclick = function(e) { 
 	const venue_id = e.target.dataset['id'];
 	if (venue_id) {
-		if (confirm('Are you sure you want to delete venue ',  venue_id,  ' ?') == true) {		//Need to replace with something nicer...
+		const message = "Are you sure you want to delete this venue " + venue_id + " ? " + "Any associated shows will also be deleted.";
+		if (confirm(message) == true) {		//Need to replace with something nicer...
 			//console.log("Attempting to delete venue ", venue_id)
 			fetch('/venues/' + venue_id + '/delete', {
 				method: 'DELETE'

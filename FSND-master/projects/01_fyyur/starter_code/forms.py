@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask_wtf import FlaskForm 
 from wtforms import StringField, SelectField, SelectMultipleField, BooleanField, TextField, DateTimeField
-from wtforms.validators import DataRequired, AnyOf, URL, Length
+from wtforms.validators import DataRequired, AnyOf, URL, Length, Regexp
 from wtforms.fields.html5 import DateField, TimeField
 
 # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
@@ -96,11 +96,12 @@ class VenueForm(FlaskForm):
         'Address', validators=[DataRequired()]
     )
     phone = StringField(
-        'Phone', validators=[DataRequired(), Length(12)]
+        'Phone', validators=[DataRequired(), Length(12), Regexp(regex=r'^.*(\d{3}).*(\d{3}).*(\d{4}).*$')]
     )
+
     image_link = StringField(
         'Image', validators=[URL()],
-         default="/static/img/DefaultArtistImage.jpeg"
+         default="/static/img/DefaultVenueImage.jpeg"
     )
     facebook_link = StringField(
         'Facebook', validators=[URL()],
@@ -210,7 +211,8 @@ class ArtistForm(FlaskForm):
     )
     phone = StringField(
         # TODO implement validation logic for phone
-        'Phone', validators=[DataRequired(), Length(12)]
+       # 'Phone', validators=[DataRequired(), Length(10), Regexp(regex=r'^.*(\d{3}).*(\d{3}).*(\d{4}).*$', message='Use xxx-xxx-xxxx.')]
+         'Phone', validators=[DataRequired()]
     )
     website = StringField(
        'Website', validators=[DataRequired(), URL()]

@@ -34,7 +34,7 @@
         </p> 
          <!-- date and time picker.  not the prettiest controls but works for this project-->
         {{ form.datepicker(class_='datepicker', placeholder='MM/DD/YYYY', autofocus = true) }}
-        {{ form.timepicker(class_='timepicker', placehoder='HH:MM', autofocus = true) }}
+        {{ form.timepicker(class_='timepicker', placehoder='HH:MM', value='20:30', autofocus = true) }}
       </div>
       <div class="form-group">
         <label for="description">{{ form.description.label }}</label>
@@ -46,9 +46,11 @@
 
 <script>  
 // -----------------------------------------------------
-// document load disable submit button
+// document load disable submit button and force format of artist avail times 
   window.onload = function(e){
     document.getElementById("submit-btn").setAttribute("disabled", "disabled");
+    const ev = new Event("change");
+    document.getElementById("artist_id").dispatchEvent(ev);
   } 
 //------------------------------------------------------
     // check if artist choice changed 
