@@ -1,8 +1,21 @@
 # End points for Fyyur project.
 # Modified by Connie Compos
 # Uses a Many to Many alternate schema for postgres database
-# parent = Venue, child = Artist, association = Show
-#  
+# parent = Venue, child = Artist, association = Show and includes Album and Song
+# tables and relationship with Artit table. 
+# 
+# To WHOMEVER is reading this.  Hello Human!  It is weird to take a course and
+# never see anyone.  So hello to the real person who is looking at this ;)!
+# I took way too long to do this assignment.  I was messing around 
+# with learning more about sqlalchemy and sql in general and the front end technologies
+# It is fun and occassionally frustrating debugging things with the database and learning what I did incorrectly.
+# And I also messed around with some of the views and using some javascript to 
+# manipulate DOM elements. I want to have more validation on the create/edit pages 
+# and some data placement is not so appealing on some pages.  Also used a not so
+# great HTLM5 datapicker and timepicker on Artist create/edit pages. But 
+# I really need to turn this in and move on with the course unless of course 
+# the project gets returned and I end up needing to edit something!  
+# THANKS for taking a look at my work.  Cheers!
 # ----------------------------------------------------------------------------#
 # Imports
 #----------------------------------------------------------------------------#
@@ -112,9 +125,32 @@ class Artist(db.Model):
     # COMPLETED: implement any missing fields, as a database migration using Flask-Migrate
     
     venues = db.relationship("Show", back_populates="artist")
-
+    albums = db.relationship('Album', backref='artist', cascade="all, delete-orphan", lazy=True)  #Lazy is default  
     def __repr__(self):
        return f'<Artist {self.id} {self.name}>'
+
+#  Added these two tables to show Artist work's on Artist page.  Does allow duplicates at this time.
+#  And probably should add some delete constraints...like maybe the cascade and delete orphan stuff discussed in lessons.
+class Album(db.Model):
+    __tablename__='album'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    artist_id = db.Column( db.Integer, db.ForeignKey('artist.id'))
+    songs = db.relationship('Song', backref='album', cascade="all, delete-orphan", lazy=True)  #Lazy is default 
+
+    def __repr__(self):
+       return f'<Album {self.id} {self.name}>'
+
+class Song(db.Model):
+    __tablename__='song'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    album_id = db.Column( db.Integer, db.ForeignKey('album.id'))
+
+    def __repr__(self):
+       return f'<Song {self.id} {self.name}>'
 
 # COMPLETED Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
@@ -223,7 +259,6 @@ def search_venues():
      city = city.capitalize()
      state = parts[1].strip()
      state = state.upper()
-     print(city, state)
      venue_search_results = Venue.query.with_entities(Venue.id, Venue.name).filter(Venue.city==city, Venue.state==state).order_by(Venue.name).all() 
 
   # if no results try a query on venue name uses ilike for case insensitive search
@@ -424,7 +459,7 @@ def delete_venue(venue_id):
   # clicking that button delete it from the db then redirect the user to the homepage
   error = False
   try:
-    print("Begin Try Delete Venue id: ", venue_id)
+    #print("Begin Try Delete Venue id: ", venue_id)
     venue=Venue.query.get(venue_id)
     name =venue.name
     #delete shows
@@ -434,7 +469,7 @@ def delete_venue(venue_id):
     #can also write as ... I think maybe allows for deleting more than one row...avoid builtin.list error?
     #Venues.query.filter_by(id=venue_id).delete()
     db.session.commit()
-    print("Delete Venue id:  committed", venue_id)
+    #print("Delete Venue id:  committed", venue_id)
   except:  
      #print("Delete Venue:  error...rollback")  
      error = True
@@ -549,6 +584,9 @@ def show_artist(artist_id):
       }  
       data.upcoming_shows.append(s)
   
+  #Get albums for this artist
+  data.albums = Album.query.join(Artist, Album.artist_id == artist_id).join(Song, Song.album_id == Album.id).all()
+  
   return render_template('pages/show_artist.html', artist=data)
 
 #~~~~~~~~UPDATE:  Edit an Artist ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -583,7 +621,7 @@ def edit_artist_submission(artist_id):
     try:
         existingArtist = Artist.query.get(artist_id) 
         form = request.form
-        print(form)
+        #print(form)
         # translate to boolean
         seeking_venue = False
         if ('seeking_venue' in form):
@@ -690,7 +728,7 @@ def delete_artist(artist_id):
   # clicking that button delete it from the db then redirect the user to the homepage
   error = False
   try:
-    print("Begin Try Delete artist id: ", artist_id)
+    #print("Begin Try Delete artist id: ", artist_id)
     artist=Artist.query.get(artist_id)
     name =artist.name
     #delete shows
@@ -700,7 +738,7 @@ def delete_artist(artist_id):
     #can also write as ... I think maybe allows for deleting more than one row...avoid builtin.list error?
     #Venues.query.filter_by(id=artist_id).delete()
     db.session.commit()
-    print("Delete Artist id:  committed", artist_id)
+    #print("Delete Artist id:  committed", artist_id)
   except:  
      #print("Delete Artist:  error...rollback")  
      error = True
@@ -752,7 +790,6 @@ def shows():
         "description":s.description,
         "start_time": s.start_time.isoformat() #returned as datetime...converted to iso datetime
       }  
-      print(s)
       data.append(s)
 
   return render_template('pages/shows.html', shows=data)
