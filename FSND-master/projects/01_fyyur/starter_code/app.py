@@ -1,4 +1,4 @@
-# End points for Fyyur project.
+# From Udacity FSND-master repo - End points for Fyyur project.
 # Modified by Connie Compos
 # Uses a Many to Many alternate schema for postgres database
 # parent = Venue, child = Artist, association = Show and includes Album and Song
