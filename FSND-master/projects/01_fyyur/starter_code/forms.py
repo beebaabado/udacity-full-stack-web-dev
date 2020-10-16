@@ -1,24 +1,31 @@
 from datetime import datetime
 from flask_wtf import FlaskForm 
 from wtforms import StringField, SelectField, SelectMultipleField, BooleanField, TextField, DateTimeField
-from wtforms.validators import DataRequired, AnyOf, URL, Length
-
-
+from wtforms.validators import DataRequired, AnyOf, URL, Length, Regexp
+from wtforms.fields.html5 import DateField, TimeField
 
 # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
 
 class ShowForm(FlaskForm):
     # Create/Edit show form
-    artist_id = StringField(
-        'Artist Id', validators=[DataRequired()]
+    artist_id = SelectField(
+        'Artist', validators=[DataRequired()] 
     )
-    venue_id = StringField(
-        'Venue Id', validators=[DataRequired()]
+    venue_id = SelectField(
+        'Venue', validators=[DataRequired()]
     )
-    start_time = DateTimeField(
-        'Start time',
+    description = TextField(
+        'Description', 
         validators=[DataRequired()],
-        default= datetime.today()
+        default="Show description"
+    )
+    datepicker = DateField (
+        'Date', validators=[DataRequired()],
+        format='%Y-%m-%d'
+    )
+    timepicker = TimeField (
+        "Time", validators=[DataRequired()],
+        format='%H:%M'
     )
 
 class VenueForm(FlaskForm):
@@ -89,11 +96,12 @@ class VenueForm(FlaskForm):
         'Address', validators=[DataRequired()]
     )
     phone = StringField(
-        'Phone', validators=[DataRequired(), Length(12)]
+        'Phone', validators=[DataRequired(), Length(12), Regexp(regex=r'^.*(\d{3}).*(\d{3}).*(\d{4}).*$')]
     )
+
     image_link = StringField(
         'Image', validators=[URL()],
-         default="/static/img/DefaultArtistImage.jpeg"
+         default="/static/img/DefaultVenueImage.jpeg"
     )
     facebook_link = StringField(
         'Facebook', validators=[URL()],
@@ -203,7 +211,8 @@ class ArtistForm(FlaskForm):
     )
     phone = StringField(
         # TODO implement validation logic for phone
-        'Phone', validators=[DataRequired(), Length(12)]
+       # 'Phone', validators=[DataRequired(), Length(10), Regexp(regex=r'^.*(\d{3}).*(\d{3}).*(\d{4}).*$', message='Use xxx-xxx-xxxx.')]
+         'Phone', validators=[DataRequired()]
     )
     website = StringField(
        'Website', validators=[DataRequired(), URL()]
@@ -242,6 +251,16 @@ class ArtistForm(FlaskForm):
             ('Soul', 'Soul'),
             ('Other', 'Other'),
         ]
+    )
+    available_start_time = DateTimeField(
+        'Available time start',
+        validators=[DataRequired()],
+        default=datetime.now()
+    )
+    available_stop_time = DateTimeField(
+        'Available time end',
+         validators=[DataRequired()],
+        default=datetime.now()
     )
     seeking_venue = BooleanField(
         'Seeking Venue',

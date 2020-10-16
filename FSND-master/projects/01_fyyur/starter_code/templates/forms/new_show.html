@@ -4,21 +4,106 @@
   <div class="form-wrapper">
     <form method="post" class="form">
       <h3 class="form-heading">List a new show</h3>
-      <div class="form-group">
-        <label for="artist_id">Artist ID</label>
+      <div class="form-group" id="artist">
+        <label for="artist_id" id="label-artist-id">{{ form.artist_id.label }}</label>
         <small>ID can be found on the Artist's Page</small>
-        {{ form.artist_id(class_ = 'form-control', autofocus = true) }}
+        {{ form.artist_id(class_ = 'form-control', autofocus = true, id='artist_id') }}
+        <!-- the option list of available times is hidden-->
+        <select id="avail_times" class="hidden">
+          {% for a in artist %}
+          <option id="{{ a.id }}" data-start-time="{{ a.time_available_start }}" data-stop-time="{{ a.time_available_stop }}" value="{{ a.id }}">
+            {{ a.time_available_start }} 
+          </option>
+          {% endfor %}
+        </select>
       </div>
       <div class="form-group">
-        <label for="venue_id">Venue ID</label>
+        <label for="venue_id">{{ form.venue_id.label }}</label>
         <small>ID can be found on the Venue's Page</small>
         {{ form.venue_id(class_ = 'form-control', autofocus = true) }}
       </div>
       <div class="form-group">
-          <label for="start_time">Start Time</label>
-          {{ form.start_time(class_ = 'form-control', placeholder='YYYY-MM-DD HH:MM', autofocus = true) }}
-        </div>
-      <input type="submit" value="Create Venue" class="btn btn-primary btn-lg btn-block">
+        <p>
+          <label class= info for="start_time">Start time</label> </br>
+          <small class="info artist-time-message" for="avail_times" id="avail_start_times_label" data-start-time="{{ artist[0].time_available_start }}" data-stop-time="{{ artist[0].time_available_stop }}" >
+              Artist available between {{ artist[0].time_available_start }} and {{ artist[0].time_available_stop }}
+          </small>
+          <small id=error class="hidden info">
+            <strong>Please enter a time within Artist's available time frame.</strong>
+          </small>
+        </p> 
+         <!-- date and time picker.  not the prettiest controls but works for this project-->
+        {{ form.datepicker(class_='datepicker', placeholder='MM/DD/YYYY', autofocus = true) }}
+        {{ form.timepicker(class_='timepicker', placehoder='HH:MM', value='20:30', autofocus = true) }}
+      </div>
+      <div class="form-group">
+        <label for="description">{{ form.description.label }}</label>
+        {{ form.description(class_ = 'form-control', autofocus = true) }}
+      </div>
+      <input type="submit" id="submit-btn" value="Create Show" class="btn btn-primary btn-lg btn-block">
     </form>
   </div>
+
+<script>  
+// -----------------------------------------------------
+// document load disable submit button and force format of artist avail times 
+  window.onload = function(e){
+    document.getElementById("submit-btn").setAttribute("disabled", "disabled");
+    const ev = new Event("change");
+    document.getElementById("artist_id").dispatchEvent(ev);
+  } 
+//------------------------------------------------------
+    // check if artist choice changed 
+    const artist_choice = document.getElementById('artist_id');	  
+    artist_choice.onchange = function(e) { 
+      const artist_times = document.getElementById('avail_times');
+      artist_times.value = artist_choice.value;
+      var label_avail_times = document.getElementById('avail_start_times_label');
+      if (label_avail_times) {
+        const opt = artist_times.options[artist_times.selectedIndex];
+        const start = opt.getAttribute('data-start-time');
+        const stop = opt.getAttribute('data-stop-time');
+        label_avail_times.setAttribute('data-start-time', start);
+        label_avail_times.setAttribute('data-stop-time', stop);
+        label_avail_times.innerText = "Artist available between " +  moment(start).format('LLL') + " and " + moment(stop).format('LLL') + ".";
+      }
+   }
+//---------------------------------------------------------
+   // on time and date update validate that date/time is within artist available times
+   const show_date = document.getElementById('datepicker');
+   show_date.oninput = function(e) {
+     const start_date = show_date.value;
+     const start_time = document.getElementById('timepicker').value;
+     const start_datetime = Date.parse(start_date + ' ' + start_time);
+     var label_avail_times = document.getElementById('avail_start_times_label');
+     const time1 = Date.parse(label_avail_times.getAttribute('data-start-time'));
+     const time2 = Date.parse(label_avail_times.getAttribute('data-stop-time'));
+     if ((start_datetime < time1) || (start_datetime > time2)) {
+      document.getElementById("error").className="show-error-message";
+      document.getElementById("submit-btn").setAttribute("disabled", "disabled");
+     }    
+     else {
+        document.getElementById("error").className="hidden";
+        document.getElementById("submit-btn").removeAttribute("disabled");
+      }
+  }   
+//----------------------------------------------------------------------   
+   const show_time = document.getElementById('timepicker');
+   show_time.oninput = function(e) {
+     const start_time = show_time.value;
+     const start_date = document.getElementById('datepicker').value;
+     const start_datetime = Date.parse(start_date + ' ' + start_time);
+     var label_avail_times = document.getElementById('avail_start_times_label');
+     const time1 = Date.parse(label_avail_times.getAttribute('data-start-time'));
+     const time2 = Date.parse(label_avail_times.getAttribute('data-stop-time'));
+     if ((start_datetime < time1) || (start_datetime > time2)) {
+      document.getElementById("error").className="";
+      document.getElementById("submit-btn").setAttribute("disabled", "disabled");
+     }     
+     else { 
+      document.getElementById("error").className="hidden"
+      document.getElementById("submit-btn").removeAttribute("disabled");
+     }
+  }  
+</script>  
 {% endblock %}
