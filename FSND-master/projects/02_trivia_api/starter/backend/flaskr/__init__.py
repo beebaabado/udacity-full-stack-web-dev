@@ -160,6 +160,8 @@ def create_app(test_config=None):
       
       if (one_category):
           current_category = one_category.format()
+          for question in current_questions:
+              question["category_type"] = one_category.type
       else:
          abort(404)
 
@@ -177,13 +179,49 @@ def create_app(test_config=None):
   @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
   This endpoint should take category and previous question parameters 
-  and return a random questions within the given category, 
+  and return a random question within the given category, 
   if provided, and that is not one of the previous questions. 
 
   TEST: In the "Play" tab, after a user selects "All" or a category,
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/quiz', methods=['POST'])
+  def retrieve_quiz_question():
+      data = request.get_json()
+      previous_questions = data['previous_questions']
+      current_category = data['quiz_category']
+      current_question = []  # returns empty if no new quesiton found
+      status_message = "OK"
+    
+      selection_questions = Question.query.filter(Question.category == current_category["id"]).all()
+      current_questions  = [question.format() for question in selection_questions]
+
+      if len(current_questions) == 0:
+          abort(404)
+          
+      # compare questions in category with previous questions that were passed in as param
+      # filter out new quiz questions
+      list_new_quesitons = [question for question in current_questions if question not in previous_questions]
+      
+      if (list_new_quesitons):
+          # choose random question by random selection from list of question keys 
+          # as new quiz question to return
+          id_list = [question["id"] for question in list_new_quesitons]
+          random_id = random.choice(id_list) 
+          current_question = [question for question in list_new_quesitons if question["id"] == random_id]
+          previous_questions.append(current_question[0]) #only one item in array
+      else:
+        # no new questions  
+          status_message = "No more questions in this category."
+          current_question = {}
+
+      return jsonify({
+          "success": True,
+          "previous_questions": previous_questions,
+          "current_question": current_question,
+          "status_message": status_message
+      })
 
   '''
   @TODO: 
@@ -222,7 +260,6 @@ def create_app(test_config=None):
           "error": 405,
           "message": "method not allowed"
     }), 405
-
 
   return app
 

@@ -75,7 +75,106 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['error'], 404)
         self.assertEqual(data['message'], "resource not found")       
+
+
+    def test_get_new_quiz_question(self):
+        """ Test Get quiz """
+        previous_questions = [
+            {
+               "id": 5,
+                "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?",
+                "answer": "Maya Angelou",
+                "category": 4,
+                "difficulty": 2
+            }, 
+            {
+                "id": 9,
+                "question": "What boxer's original name is Cassius Clay?",
+                "answer": "Muhammad Ali",
+                "category": 4,
+                "difficulty": 1
+            }]
+
+        quiz_category = {'id': 4, 
+                         'type':'History'}
+        res = self.client().post('/quiz', json={'previous_questions': previous_questions, 'quiz_category': quiz_category})    
+        data = json.loads(res.data)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['previous_questions'])
+        self.assertTrue(data['current_question'])
         
+    def test_get_new_quiz_question_no_new_questions(self):
+        """ Test Get quiz NO MORE QUESTIONS"""
+        #test database has only 4 category 4 questions 
+        previous_questions = [
+            {
+               "id": 5,
+                "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?",
+                "answer": "Maya Angelou",
+                "category": 4,
+                "difficulty": 2
+            }, 
+            {
+                "id": 9,
+                "question": "What boxer's original name is Cassius Clay?",
+                "answer": "Muhammad Ali",
+                "category": 4,
+                "difficulty": 1
+            },
+            {
+                "id": 12, 
+                "question": "Who invented Peanut Butter?", 
+                "answer": "George Washington Carver", 
+                "category": 4, 
+                "difficulty": 2
+            },
+            {
+                "id": 23, 
+                "question": "Which dung beetle was worshipped by the ancient Egyptians?", 
+                "answer": "Scarab", 
+                "category": 4, 
+                "difficulty": 4
+            }]
+
+        quiz_category = {'id': 4, 
+                         'type':'History'}
+        res = self.client().post('/quiz', json={'previous_questions': previous_questions, 'quiz_category': quiz_category})    
+        data = json.loads(res.data)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['previous_questions'])
+        self.assertEqual(len(data['current_question']), 0)
+        self.assertEqual(data['status_message'], "No more questions in this category.")
+
+    def test_get_new_quiz_question_invalid_category(self):
+        """ Test Get quiz invalid category"""
+        previous_questions = [
+            {
+               "id": 5,
+                "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?",
+                "answer": "Maya Angelou",
+                "category": 4,
+                "difficulty": 2
+            }, 
+            {
+                "id": 9,
+                "question": "What boxer's original name is Cassius Clay?",
+                "answer": "Muhammad Ali",
+                "category": 4,
+                "difficulty": 1
+            }]
+
+        quiz_category = {'id': 100, 
+                         'type':'History'}
+        res = self.client().post('/quiz', json={'previous_questions': previous_questions, 'quiz_category': quiz_category})    
+        data = json.loads(res.data)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['error'], 404)
+        self.assertEqual(data['message'], "resource not found")       
+
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
