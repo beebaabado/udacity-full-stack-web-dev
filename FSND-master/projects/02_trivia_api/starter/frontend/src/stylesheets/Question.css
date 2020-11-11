@@ -6,6 +6,8 @@
 .categories-list {
   flex-basis: 25%;
   flex-shrink: 2;
+  align-items: center;
+  justify-content: left;
 }
 
 .categories-list > form {

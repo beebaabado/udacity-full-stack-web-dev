@@ -3,8 +3,8 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-
 from models import setup_db, Question, Category
+
 
 QUESTIONS_PER_PAGE = 10
 
@@ -38,13 +38,6 @@ def create_app(test_config=None):
       paged_questions = [question.format() for question in selection]
       selected_questions = paged_questions[start:end]
       return selected_questions
-
-  # HOME
-  # Default Route...index
-  # @app.route('/')
-  # @app.route('/index')
-  # def index():
-  #     return()
 
   # Retrieve all categories and total categories count    
   @app.route('/categories', methods=['GET'])
@@ -84,14 +77,8 @@ def create_app(test_config=None):
               if category.id == question['category']:
                 question["category_type"] = category.type
              
-    
+      # Default category is first category 
       categories = [item.format() for item in selection_categories]
-      one_category = Category.query.filter(Category.id == 1).one_or_none()
-      
-      if (one_category):
-          current_category = one_category.format()
-      else:
-         abort(404)
 
       if len(current_questions) == 0:
           abort(404)
@@ -100,7 +87,7 @@ def create_app(test_config=None):
           "success": True,
           "questions": current_questions,
           "total_questions": len(Question.query.all()),
-          "current_category": current_category,
+          "current_category": categories[0],
           "categories": categories,
       })
 
@@ -118,6 +105,19 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
+  @app.route('/questions/<int:question_id>', methods=['DELETE'])
+  def delete_question(question_id):
+
+      try:
+          question = Question.query.get(question_id)
+          question.delete()
+      except:
+          abort(422)
+
+      return jsonify({
+        "success": True,
+        "deleted": question.id
+      })
 
   '''
   @TODO: 
@@ -129,6 +129,32 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/questions', methods=['POST'])
+  def add_question():
+      body = request.get_json()
+      
+      if body==None:
+          abort(400)
+
+      try: 
+          new_question = Question(
+              question = body['question'],
+              answer = body['answer'],
+              difficulty = body['difficulty'],
+              category = body['category']
+          )
+          new_question.insert()
+          
+          selection = Question.query.all()
+          current_questions = paginate_questions(request, selection)
+          return jsonify({
+              "success": True,
+              "questions": current_questions,
+              "created":new_question.id,
+              "total_questions": len(current_questions)
+          })
+      except:
+          abort(422) 
 
   '''
   @TODO: 
@@ -186,41 +212,39 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
-  @app.route('/quiz', methods=['POST'])
+  @app.route('/quizzes', methods=['POST'])
   def retrieve_quiz_question():
       data = request.get_json()
       previous_questions = data['previous_questions']
       current_category = data['quiz_category']
       current_question = []  # returns empty if no new quesiton found
-      status_message = "OK"
-    
+      
+      print("PREVIOUS_QUESTIONS...")
+      print(previous_questions)
+
       selection_questions = Question.query.filter(Question.category == current_category["id"]).all()
       current_questions  = [question.format() for question in selection_questions]
 
       if len(current_questions) == 0:
           abort(404)
-          
+
       # compare questions in category with previous questions that were passed in as param
       # filter out new quiz questions
-      list_new_quesitons = [question for question in current_questions if question not in previous_questions]
+      list_new_questions = [question for question in current_questions if question["id"] not in previous_questions]
+
+      print(list_new_questions)
       
-      if (list_new_quesitons):
+      if (list_new_questions):
           # choose random question by random selection from list of question keys 
           # as new quiz question to return
-          id_list = [question["id"] for question in list_new_quesitons]
+          id_list = [question["id"] for question in list_new_questions]
           random_id = random.choice(id_list) 
-          current_question = [question for question in list_new_quesitons if question["id"] == random_id]
-          previous_questions.append(current_question[0]) #only one item in array
-      else:
-        # no new questions  
-          status_message = "No more questions in this category."
-          current_question = {}
-
+          current_question = [question for question in list_new_questions if question["id"] == random_id]
+          #previous_questions.append(current_question[0]) #only one item in array
+      
       return jsonify({
           "success": True,
-          "previous_questions": previous_questions,
-          "current_question": current_question,
-          "status_message": status_message
+          "question": current_question
       })
 
   '''

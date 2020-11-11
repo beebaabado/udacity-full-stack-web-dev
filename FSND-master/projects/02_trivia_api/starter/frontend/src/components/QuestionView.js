@@ -13,7 +13,7 @@ class QuestionView extends Component {
       page: 1,
       totalQuestions: 0,
       categories: [],
-      currentCategory: {},
+      currentCategory: {}
     }
   }
 
@@ -33,8 +33,8 @@ class QuestionView extends Component {
           currentCategory: result.current_category,
           totalCategories: result.total_categories})
         
-          console.log(this.state.categories);
-          console.log(this.state.categories[0].id);
+          //console.log(this.state.categories);
+          //console.log(this.state.categories[0].id);
           console.log(this.state.currentCategory);
         
           return;
@@ -106,7 +106,7 @@ class QuestionView extends Component {
       }
     })
   }
-
+  // NOTE TO SELF:  HOW DOES THIS WORK...how is action set?
   questionAction = (id) => (action) => {
     if(action === 'DELETE') {
       if(window.confirm('are you sure you want to delete the question?')) {
@@ -134,7 +134,7 @@ class QuestionView extends Component {
                    {/* Object.key wants to return enum array of strings... {Object.keys(this.state.categories).map(category => (  */}
                 {this.state.categories.map(category => (
                 <li key={category.id} onClick={() => { this.getByCategory(category.id); } }>
-                  <img className="category" src={`${category.type}.svg`}/>
+                  <img className="category" src={`${category.type}.svg`} alt=""/>
                   {category.type} 
                 </li>
               ))} 
