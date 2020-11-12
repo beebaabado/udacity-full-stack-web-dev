@@ -1,3 +1,10 @@
+# filename: test_flask.py
+# author:  modified by Connie Compos
+# date: 11/10/2020 
+# version number: n/a
+# Full Stack Web Developer Nanodegree Trivia API Backend unittests
+# for testing trivia API used by Udacity triva app - project 2
+
 import os
 import unittest
 import json
@@ -118,7 +125,7 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_get_questions(self):
         """ Test GET questions endpoint"""
-        res = self.client().get('/questions')
+        res = self.client().get('/questions?page=2')
         data = json.loads(res.data)
         
         self.assertEqual(data['success'], True)
@@ -194,8 +201,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['deleted'], self.question_to_delete_id)
-        #self.assertTrue(len(data['current_questions']))
-
+    
     def test_delete_question_invalid_id_DELETE(self):
         """ Test FAIL DELETE question with invalid id"""
         res = self.client().delete('/questions/5000')
@@ -206,6 +212,24 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['error'], 422)
         self.assertEqual(data['message'], "unprocessable")
     
+    def test_search_questions(self):
+        res = self.client().post('/questions', json={'searchTerm':'title'})
+        data = json.loads(res.data)
+
+        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['questions'])
+        self.assertEqual(len(data['questions']), data['total_questions'])
+
+    def test_search_questions_searchterm_notfound(self):
+        res = self.client().post('/questions', json={'searchTerm':'ZZZZZ'})
+        data = json.loads(res.data)
+
+        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['total_questions'], 0)
+        self.assertEqual(len(data['questions']), 0)
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()

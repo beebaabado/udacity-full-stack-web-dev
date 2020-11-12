@@ -32,11 +32,6 @@ class QuestionView extends Component {
           categories: result.categories,
           currentCategory: result.current_category,
           totalCategories: result.total_categories})
-        
-          //console.log(this.state.categories);
-          //console.log(this.state.categories[0].id);
-          console.log(this.state.currentCategory);
-        
           return;
       },
       error: (error) => {
@@ -134,9 +129,16 @@ class QuestionView extends Component {
                    {/* Object.key wants to return enum array of strings... {Object.keys(this.state.categories).map(category => (  */}
                 {this.state.categories.map(category => (
                 <li key={category.id} onClick={() => { this.getByCategory(category.id); } }>
-                  <img className="category" src={`${category.type}.svg`} alt=""/>
-                  {category.type} 
+                  <div class="category-list-holder">
+                    <div class="category-list-item-left">
+                        <img className="category" src={`${category.type}.svg`} alt=""/>
+                    </div>
+                    <div class="category-list-item-right">
+                        {category.type}
+                     </div>
+                  </div>
                 </li>
+               
               ))} 
           </ul>
           <Search submitSearch={this.submitSearch}/>

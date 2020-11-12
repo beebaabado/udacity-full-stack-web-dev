@@ -42,14 +42,8 @@ class QuizView extends Component {
   // callback. Whatever we pass into setState’s second argument executes 
   // after the setState function updates.
   selectCategory = (type, id=0) => {
-    // console.log("selectCategory....")
+    if (id == 0) {type = "All"}
     this.setState({quizCategory: {id: id, type: type} }, this.getNextQuestion)
-     
-    // console.log("selectCategory After call to GetNExtQuestion quizCategory;  " )
-    // console.log(type)
-    // console.log(id)
-    // console.log(this.state.quizCategory)  //BUG!!!   value is null after returning from getNextQuestion?
-    // console.log(this.state.currentQuestion[0]) //NULL!! always
   }
 
   handleChange = (event) => {
@@ -66,7 +60,7 @@ class QuizView extends Component {
   
     console.log("GetNExtQuestion quizCategory;  " )
     console.log(this.state.quizCategory)
-    console.log(this.state.currentQuestion.id); 
+    console.log(this.state.currentQuestion.id)
     console.log(previousQuestions)
 
     $.ajax({      

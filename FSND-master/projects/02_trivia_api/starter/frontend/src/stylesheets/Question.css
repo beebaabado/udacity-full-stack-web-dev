@@ -5,9 +5,26 @@
 
 .categories-list {
   flex-basis: 25%;
-  flex-shrink: 2;
+  flex-shrink: 1;
   align-items: center;
-  justify-content: left;
+  justify-content: center;
+}
+
+.category-list-holder {
+   display:flex;
+   flex-direction: row;
+   align-items: center;
+}
+
+.category-list-item-left {
+   width: 25%;
+   text-align: right;
+} 
+
+.category-list-item-right {
+   flex-grow: 2;
+   text-align: left;
+   padding-left: 10px;
 }
 
 .categories-list > form {

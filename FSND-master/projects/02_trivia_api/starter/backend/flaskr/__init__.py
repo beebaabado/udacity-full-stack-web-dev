@@ -1,3 +1,10 @@
+# filename: __init__.py
+# author:  modified by Connie Compos
+# date: 11/10/2020 
+# version number: n/a
+# Full Stack Web Developer Nanodegree Trivia API Backend 
+# for accessing database used by Udacity triva app - project 2
+
 import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -5,29 +12,23 @@ from flask_cors import CORS
 import random
 from models import setup_db, Question, Category
 
-
+# Raginating questions max number to return
 QUESTIONS_PER_PAGE = 10
 
+# Create and configure the app
 def create_app(test_config=None):
-  # create and configure the app
+
   app = Flask(__name__)
   setup_db(app)
-  # Set up CORS. Allow '*' for origins.  COMPLETED.
+  # Set up CORS. Allow fro all origins.
   CORS(app, resources={r"./*": {"origins": "*"}})
-
-  # Use the after_request decorator to set Access-Control-Allow   COMPLETED.
   @app.after_request
   def after_request(response):
       response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, true')
-      #response.headers.add('Access-Control-Allow_Origins', '*')
       response.headers.add('Access-Control-Allow-Methods', 'GET, PUT, POST, PATCH, DELETE, OPTIONS')
       return (response)
   
-  '''
-  @TODO: 
-  Create an endpoint to handle GET requests 
-  for all available categories.
-  '''
+  # ---------------------- Paginate Questions ----------------------------
   # Send questions back in batches.  User sends page number as URL parameter
   # max number of questions per page is QUESTIONS_PER_PAGE = 10
   def paginate_questions(request, selection):      
@@ -39,6 +40,9 @@ def create_app(test_config=None):
       selected_questions = paged_questions[start:end]
       return selected_questions
 
+  # ---------------------- END POINTS ------------------------------------
+  
+  # ---------------------- GET Categories --------------------------------
   # Retrieve all categories and total categories count    
   @app.route('/categories', methods=['GET'])
   def retrieve_categories():
@@ -53,31 +57,22 @@ def create_app(test_config=None):
           "categories": categories,
           "total_categories": len(Category.query.all())
       })
-  '''
-  @TODO: 
-  Create an endpoint to handle GET requests for questions, 
-  including pagination (every 10 questions). 
-  This endpoint should return a list of questions, 
-  number of total questions, current category, categories. 
-  '''
   
-  # return questions paginated
-  # also returns total questions count, current category , and total categories.
+  # ---------------------- GET Questions ---------------------------------
+  # Return paginated questions, total question count, current category and 
+  # total categories
   @app.route('/questions', methods=['GET'])
   def retrieve_questions():
     
       selection_questions = Question.query.all()
       current_questions = paginate_questions(request, selection_questions)
       selection_categories = Category.query.order_by(Category.type).all()
-      # This is not most efficient way to do this.  Should do join from database
-      # to combine category type with questions.  However, we use question.format() which does
-      # not handle category type.  So add category type after the fact.  
+      #attach category type to each question
       for question in current_questions:
           for category in selection_categories:
               if category.id == question['category']:
                 question["category_type"] = category.type
              
-      # Default category is first category 
       categories = [item.format() for item in selection_categories]
 
       if len(current_questions) == 0:
@@ -87,24 +82,11 @@ def create_app(test_config=None):
           "success": True,
           "questions": current_questions,
           "total_questions": len(Question.query.all()),
-          "current_category": categories[0],
+          "current_category": categories[0],  # default category is category for first question
           "categories": categories,
       })
-
-  '''
-  TEST: At this point, when you start the application
-  you should see questions and categories generated,
-  ten questions per page and pagination at the bottom of the screen for three pages.
-  Clicking on the page numbers should update the questions. 
-  '''
-
-  '''
-  @TODO: 
-  Create an endpoint to DELETE question using a question ID. 
-
-  TEST: When you click the trash icon next to a question, the question will be removed.
-  This removal will persist in the database and when you refresh the page. 
-  '''
+  # ---------------------- Delete Question -------------------------------
+  # Delete question with give id, returns deleted question id
   @app.route('/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
 
@@ -119,65 +101,53 @@ def create_app(test_config=None):
         "deleted": question.id
       })
 
-  '''
-  @TODO: 
-  Create an endpoint to POST a new question, 
-  which will require the question and answer text, 
-  category, and difficulty score.
-
-  TEST: When you submit a question on the "Add" tab, 
-  the form will clear and the question will appear at the end of the last page
-  of the questions list in the "List" tab.  
-  '''
+  # ---------------------- Create or Search Question ---------------------------------
+  # Create a new question or search for question
   @app.route('/questions', methods=['POST'])
-  def add_question():
+  def add_search_question():
       body = request.get_json()
       
       if body==None:
           abort(400)
 
+      try:
+          search_term = body.get('searchTerm', None)
+      except:
+          pass  # not a search then maybe a create new question so keep going
+
       try: 
-          new_question = Question(
-              question = body['question'],
-              answer = body['answer'],
-              difficulty = body['difficulty'],
-              category = body['category']
-          )
-          new_question.insert()
+          if search_term:
+              selection = Question.query.filter(Question.question.ilike('%' + search_term + '%')).all()
+              current_questions = paginate_questions(request, selection)
+              
+              return jsonify({
+                  "success":True,
+                  "questions": current_questions,
+                  "total_questions": len(selection)
+              })
+          else: 
+              new_question = Question(
+                  question = body['question'],
+                  answer = body['answer'],
+                  difficulty = body['difficulty'],
+                  category = body['category']
+              )
+              new_question.insert()
           
-          selection = Question.query.all()
-          current_questions = paginate_questions(request, selection)
-          return jsonify({
-              "success": True,
-              "questions": current_questions,
-              "created":new_question.id,
-              "total_questions": len(current_questions)
-          })
+              selection = Question.query.all()
+              current_questions = paginate_questions(request, selection)
+              return jsonify({
+                  "success": True,
+                  "questions": current_questions,
+                  "created":new_question.id,
+                  "total_questions": len(selection)
+              })
       except:
           abort(422) 
 
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
-
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
-  '''
-
-  '''
-  @TODO: 
-  Create a GET endpoint to get questions based on category. 
-
-  TEST: In the "List" tab / main screen, clicking on one of the 
-  categories in the left column will cause only questions of that 
-  category to be shown. 
-  '''
-  # return questions by category and paginated
-  # paramters:  int category_id
-  # also returns total questions count, current category , and total categories.
+  # ---------------------- GET Questions by Category ---------------------
+  # return paginated questions by category 
+  # also returns total questions count, current category
   @app.route('/categories/<int:category_id>/questions', methods=['GET'])
   def retrieve_category_questions(category_id):
       selection_questions = Question.query.filter(Question.category == category_id).all()
@@ -201,17 +171,10 @@ def create_app(test_config=None):
           "total_questions": len(selection_questions)
       })
 
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions to play the quiz. 
-  This endpoint should take category and previous question parameters 
-  and return a random question within the given category, 
-  if provided, and that is not one of the previous questions. 
-
-  TEST: In the "Play" tab, after a user selects "All" or a category,
-  one question at a time is displayed, the user is allowed to answer
-  and shown whether they were correct or not. 
-  '''
+  # ---------------------- GET Random Question in Category ---------------
+  # Returns a random question within the given category that is not 
+  # a question that was previously stored in previous questions (from 
+  # frontend)
   @app.route('/quizzes', methods=['POST'])
   def retrieve_quiz_question():
       data = request.get_json()
@@ -219,39 +182,34 @@ def create_app(test_config=None):
       current_category = data['quiz_category']
       current_question = []  # returns empty if no new quesiton found
       
-      print("PREVIOUS_QUESTIONS...")
-      print(previous_questions)
-
-      selection_questions = Question.query.filter(Question.category == current_category["id"]).all()
+      # If category type is "All" (id = 0) then choose from all questions
+      if current_category["id"] == 0:
+          selection_questions = Question.query.all()
+      else:
+          selection_questions = Question.query.filter(Question.category == current_category["id"]).all()
+      
+      # need to make questions have same format as incomping list of previous questions
       current_questions  = [question.format() for question in selection_questions]
 
       if len(current_questions) == 0:
           abort(404)
 
-      # compare questions in category with previous questions that were passed in as param
-      # filter out new quiz questions
+      # compare questions in current category with previous questions that 
+      # were passed in and filter out new questions
       list_new_questions = [question for question in current_questions if question["id"] not in previous_questions]
-
-      print(list_new_questions)
-      
       if (list_new_questions):
-          # choose random question by random selection from list of question keys 
+          # choose random question from list of question keys 
           # as new quiz question to return
           id_list = [question["id"] for question in list_new_questions]
           random_id = random.choice(id_list) 
           current_question = [question for question in list_new_questions if question["id"] == random_id]
-          #previous_questions.append(current_question[0]) #only one item in array
-      
+
       return jsonify({
           "success": True,
           "question": current_question
       })
 
-  '''
-  @TODO: 
-  Create error handlers for all expected errors 
-  including 404 and 422. 
-  '''
+  # --------------------- ERROR handlers ---------------------------------
   
   @app.errorhandler(404)
   def not_found(error):
@@ -284,6 +242,15 @@ def create_app(test_config=None):
           "error": 405,
           "message": "method not allowed"
     }), 405
+
+
+  @app.errorhandler(500)
+  def method_not_allowed(error):
+    return jsonify({
+          "success": False,
+          "error": 500,
+          "message": "Internal Server Error"
+    }), 500
 
   return app
 
