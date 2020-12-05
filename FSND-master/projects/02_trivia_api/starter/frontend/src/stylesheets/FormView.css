@@ -1,6 +1,12 @@
 .form-view > label {
-  padding: 0px 0px 10px;
+  padding: 10px;
 }
+
 #add-form {
   text-align: center;
+}
+
+.message {
+  margin: 5px;
+  color: purple;
 }

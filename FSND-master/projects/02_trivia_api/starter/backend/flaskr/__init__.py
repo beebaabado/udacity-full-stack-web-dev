@@ -1,16 +1,17 @@
 # filename: __init__.py
 # author:  modified by Connie Compos
-# date: 11/10/2020 
+# date: 12/5/2020 
 # version number: n/a
 # Full Stack Web Developer Nanodegree Trivia API Backend 
 # for accessing database used by Udacity triva app - project 2
 
+# import sys  #for debugging
 import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-from models import setup_db, Question, Category
+from models import setup_db, Question, Category, Player, Score
 
 # Raginating questions max number to return
 QUESTIONS_PER_PAGE = 10
@@ -40,7 +41,7 @@ def create_app(test_config=None):
       selected_questions = paged_questions[start:end]
       return selected_questions
 
-  # ---------------------- END POINTS ------------------------------------
+  # ---------------------- ENDPOINTS ------------------------------------
   
   # ---------------------- GET Categories --------------------------------
   # Retrieve all categories and total categories count    
@@ -83,22 +84,7 @@ def create_app(test_config=None):
           "questions": current_questions,
           "total_questions": len(Question.query.all()),
           "current_category": categories[0],  # default category is category for first question
-          "categories": categories,
-      })
-  # ---------------------- Delete Question -------------------------------
-  # Delete question with give id, returns deleted question id
-  @app.route('/questions/<int:question_id>', methods=['DELETE'])
-  def delete_question(question_id):
-
-      try:
-          question = Question.query.get(question_id)
-          question.delete()
-      except:
-          abort(422)
-
-      return jsonify({
-        "success": True,
-        "deleted": question.id
+          "categories": categories
       })
 
   # ---------------------- Create or Search Question ---------------------------------
@@ -139,11 +125,29 @@ def create_app(test_config=None):
               return jsonify({
                   "success": True,
                   "questions": current_questions,
-                  "created":new_question.id,
+                  "created": new_question.id,
                   "total_questions": len(selection)
               })
       except:
-          abort(422) 
+          abort(422)  
+
+  # ---------------------- Delete Question -------------------------------
+  # Delete question with give id, returns deleted question id
+  @app.route('/questions/<int:question_id>', methods=['DELETE'])
+  def delete_question(question_id):
+
+      try:
+          question = Question.query.get(question_id)
+          question.delete()
+      except:
+          abort(422)
+
+      return jsonify({
+        "success": True,
+        "deleted": question.id
+      })
+
+  
 
   # ---------------------- GET Questions by Category ---------------------
   # return paginated questions by category 
@@ -209,6 +213,103 @@ def create_app(test_config=None):
           "question": current_question
       })
 
+  # ---------------------- Add New Player --------------------------------
+  # Add new player. Returns new player id.
+
+  @app.route('/players', methods=['POST'])   
+  def add_player():
+      body = request.get_json()
+
+      if body==None: 
+          abort(400)
+         
+      try:
+      
+         # check if user exists
+          player = Player.query.filter(Player.name == body['name']).one_or_none()
+          if player!=None:
+              abort(422)
+              
+          new_player = Player(
+              name = body['name']
+              )    
+          new_player.insert()
+         
+          return jsonify({
+              "success": True,
+              "created": new_player.id
+              })
+      except:
+          abort(422) 
+
+
+  # ---------------------- Get Player info -------------------------------
+  # Retrieve player info by name.  Returns player object and player scores
+  #
+  @app.route('/players/<string:player_name>', methods=['GET'])
+  def get_player(player_name):
+      scores = []
+
+      a_player = Player.query.filter(Player.name == player_name).one_or_none()
+
+      if a_player == None:
+          abort(404)
+
+      a_player_formatted = a_player.format()  
+      scores = [score.format() for score in a_player.scores]
+      
+      for score in scores:
+          score_category = Category.query.filter(Category.id == score["category_id"]).one_or_none()
+          score["category_type"] = score_category.type 
+
+      return jsonify({
+          "success": True,
+          "player": a_player_formatted,
+          "scores": scores,
+          'scoreCount': len(scores) 
+      })
+  
+  # ---------------------- Delete Player -------------------------------
+  # Delete player with give id, returns deleted player id
+  @app.route('/players/<int:player_id>', methods=['DELETE'])
+  def delete_player(player_id):
+
+      try:
+          a_player = Player.query.get(player_id)
+          a_player.delete()
+      except:
+          abort(422)
+
+      return jsonify({
+        "success": True,
+        "deleted": a_player.id
+      })
+
+  # --------------------- Add Player score ------------------------------
+  # Add new score to specified player
+  #
+  @app.route('/score', methods=['POST'])
+  def add_score():
+      body = request.get_json()
+      
+      if body==None: 
+          abort(400)
+         
+      try:
+          new_score = Score(
+              value = int(body['value']),
+              category_id = int(body['category_id']),
+              player_id = int(body['player_id'])
+              )    
+          new_score.insert()
+          
+          return jsonify({
+              "success": True,
+              "created": new_score.id
+              })
+      except:
+          #print(sys.exc_info())
+          abort(422) 
   # --------------------- ERROR handlers ---------------------------------
   
   @app.errorhandler(404)
@@ -253,5 +354,3 @@ def create_app(test_config=None):
     }), 500
 
   return app
-
-    

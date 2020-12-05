@@ -22,7 +22,6 @@ class Question extends Component {
           <img className="category" src={`${category}.svg`} alt=""/>
           <div className="difficulty">Difficulty: {difficulty}</div>
           <img src="delete.png" alt="Delete" className="delete" onClick={() => this.props.questionAction('DELETE')}/>
-          
         </div>
         <div className="show-answer button"
             onClick={() => this.flipVisibility()}>

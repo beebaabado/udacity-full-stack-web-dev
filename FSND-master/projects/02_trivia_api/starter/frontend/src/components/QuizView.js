@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
-
+import PlayerContext from './PlayerContext';
 import '../stylesheets/QuizView.css';
 
 const questionsPerPlay = 5; 
@@ -20,9 +20,21 @@ class QuizView extends Component {
     }
   }
 
+  // context for sharing player profile info
+  static contextType = PlayerContext;
+    
   componentDidMount(){
+    
+    // store current player id and name
+    const search = window.location.search;
+    const params = new URLSearchParams(search);
+    const { player, setPlayer } = this.context;
+    const currPlayer = { id: params.get('player_id'), name: params.get('player_name') }
+    setPlayer(currPlayer);
+ 
+    // get available quiz categories 
     $.ajax({
-      url: '/categories', //TODO: update request URL
+      url: '/categories',
       type: "GET",
       success: (result) => {
         this.setState({ categories: result.categories })
@@ -35,10 +47,9 @@ class QuizView extends Component {
     })
   }
 
-  // NOTE TO SELF:  Here’s something extremely important to know about 
-  // state in React: updating a React component’s state is asynchronous. 
-  // It does not happen immediately.
-  // To solve this specific React issue, we can use the setState function’s 
+  // NOTE:  state in React: updating a React component’s state is asynchronous. 
+  // It does not happen immediately.  To solve this specific React issue, 
+  // we can use the setState function’s 
   // callback. Whatever we pass into setState’s second argument executes 
   // after the setState function updates.
   selectCategory = (type, id=0) => {
@@ -47,24 +58,15 @@ class QuizView extends Component {
   }
 
   handleChange = (event) => {
-    console.log("handleChange...................")
-    console.log(event.target.value)
     this.setState({[event.target.name]: event.target.value})
-    console.log(this.state.guess)
   }
 
   getNextQuestion = () => {
     const previousQuestions =[...this.state.previousQuestions] // why use spread operator?
-    //const previousQuestions = this.state.previousQuestions
     if (this.state.currentQuestion.id) { previousQuestions.push(this.state.currentQuestion.id) }
-  
-    console.log("GetNExtQuestion quizCategory;  " )
-    console.log(this.state.quizCategory)
-    console.log(this.state.currentQuestion.id)
-    console.log(previousQuestions)
-
+    
     $.ajax({      
-      url: '/quizzes', //TODO: update request URL     
+      url: '/quizzes',   
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
@@ -76,9 +78,7 @@ class QuizView extends Component {
         withCredentials: true
       },
       crossDomain: true,
-      success: (result) => {
-        // console.log("In getNextQuestion sucessfully got next question:  print result")
-        // console.log(result) 
+      success: (result) => { 
         this.setState({
           showAnswer: false,
           previousQuestions: previousQuestions,
@@ -86,8 +86,6 @@ class QuizView extends Component {
           guess: '',
           forceEnd: result.question[0] ? false : true
         })
-        // console.log("GetNExtQuestion currentQuestion;  " )
-        // console.log(this.state.currentQuestion.question)  
         return;
       },
       error: (error) => {
@@ -98,7 +96,7 @@ class QuizView extends Component {
   }
 
   submitGuess = (event) => {
-    event.preventDefault();  /* what action is being prevented? */
+    event.preventDefault(); 
     const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
     let evaluate =  this.evaluateAnswer()
     this.setState({
@@ -120,7 +118,6 @@ class QuizView extends Component {
   }
 
   renderPrePlay(){
-    // console.log("renderPrePlay....")
       return (
           <div className="quiz-play-holder">
               <div className="choose-header">Choose Category</div>
@@ -141,31 +138,56 @@ class QuizView extends Component {
           </div>
       )
   }
+  
+
+  saveUserScore = () => {
+    
+    const { player, setPlayer} = this.context;
+    if (player.name === null)
+      return;  // no player id, cannot save scores
+     
+    $.ajax({
+        url: '/score',
+        type: "POST",
+        dataType: 'json',  
+        contentType: 'application/json',
+        data: JSON.stringify({
+          player_id: parseInt(player.id),
+          category_id: this.state.quizCategory.id,
+          value: this.state.numCorrect
+         }),
+        xhrFields: {
+          withCredentials: true
+        },
+        crossDomain: true,
+         success: (result) => {
+          return;
+        },
+        error: (error) => {
+          //console.log("Error saving quiz score.")  
+          return;
+        }
+    })
+  }   
 
   renderFinalScore(){
+    this.saveUserScore();
     return(
       <div className="quiz-play-holder">
         <div className="final-header"> Your Final Score is {this.state.numCorrect}</div>
         <div className="play-again button" onClick={this.restartGame}> Play Again? </div>
       </div>
+      
     )
   }
 
   evaluateAnswer = () => {
-    console.log("GUESS................................. ")
-    console.log(this.state.guess)
-    console.log(this.state.currentQuestion.answer)
-  
     const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase().split(' ')
     const answerArray = this.state.currentQuestion.answer.toLowerCase().split(' ')
-    console.log(formatGuess)
-    console.log(answerArray)
     return formatGuess.every(item => answerArray.includes(item));
-    //return answerArray.includes(formatGuess)
   }
 
   renderCorrectAnswer(){
-    //const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
     let evaluate =  this.evaluateAnswer()
     return(
       <div className="quiz-play-holder">
@@ -178,9 +200,6 @@ class QuizView extends Component {
   }
 
   renderPlay(){   
-    console.log("renderPlay....")
-    console.log(this.state.previousQuestions.length)
-    console.log(this.state.numCorrect)
     return this.state.previousQuestions.length === questionsPerPlay || this.state.forceEnd
       ? this.renderFinalScore()
       : this.state.showAnswer 
@@ -192,19 +211,6 @@ class QuizView extends Component {
               className="quiz-question">
               {this.state.currentQuestion.question}
             </div>
-          
-            {/* use mapping if need to iterate through array  */}
-            {/* {this.state.currentQuestion.map(current_question => {
-            return (
-              <div 
-                key={current_question.id} v
-                value={current_question.id}
-                className="quiz-question">
-                {current_question.question}
-              </div>
-              )
-            })} */}
-            
             <form onSubmit={this.submitGuess}>
               <input type="text" name="guess" onChange={this.handleChange}/>
               <input className="submit-guess button" type="submit" value="Submit Answer" />
@@ -214,11 +220,7 @@ class QuizView extends Component {
      
   }
 
-
   render() {
-    // console.log("render...")
-    // console.log(this.state)
-
     return this.state.quizCategory             
         ? this.renderPlay()
         : this.renderPrePlay()

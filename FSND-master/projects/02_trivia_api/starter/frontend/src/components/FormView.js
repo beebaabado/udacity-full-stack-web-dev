@@ -11,7 +11,8 @@ class FormView extends Component {
       answer: "",
       difficulty: 1,
       category: 1,
-      categories: []
+      categories: [],
+      visibility: false
     }
   }
 
@@ -50,6 +51,9 @@ class FormView extends Component {
       crossDomain: true,
       success: (result) => {
         document.getElementById("add-question-form").reset();
+        this.setState ({
+          visibility: true
+        }) 
         return;
       },
       error: (error) => {
@@ -60,7 +64,15 @@ class FormView extends Component {
   }
 
   handleChange = (event) => {
-    this.setState({[event.target.name]: event.target.value})
+    this.setState({
+      [event.target.name]: event.target.value,
+      visibility: false
+    })
+
+  }
+  
+  flipVisibility() {
+    this.setState({visibility: !this.state.visibility});
   }
 
   render() {
@@ -68,16 +80,15 @@ class FormView extends Component {
       <div id="add-form">
         <h2>Add a New Trivia Question</h2>
         <form className="form-view" id="add-question-form" onSubmit={this.submitQuestion}>
-          <label>
-            Question
-            <input type="text" name="question" onChange={this.handleChange}/>
+          <label>Question</label>
+          <input type="text" name="question" onChange={this.handleChange}/>
+        
+          <label>Answer &nbsp;
+          <input type="text" name="answer" onChange={this.handleChange}/>
           </label>
+          
           <label>
-            Answer
-            <input type="text" name="answer" onChange={this.handleChange}/>
-          </label>
-          <label>
-            Difficulty
+            Difficulty &nbsp;
             <select name="difficulty" onChange={this.handleChange}>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -86,8 +97,9 @@ class FormView extends Component {
               <option value="5">5</option>
             </select>
           </label>
+          
           <label>
-            Category
+            Category &nbsp;
             <select name="category" onChange={this.handleChange}>
               {this.state.categories.map(category => {
                   return (
@@ -96,7 +108,12 @@ class FormView extends Component {
                 })}
             </select>
           </label>
+          
           <input type="submit" className="button" value="Submit" />
+          
+          <div className="message">
+            <span style={{"visibility": this.state.visibility ? 'visible' : 'hidden'}}>Question was added successfully.</span>
+          </div>
         </form>
       </div>
     );
