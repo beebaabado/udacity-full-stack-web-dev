@@ -1,0 +1,24 @@
+.score-container {
+    display: flex;
+    flex-direction:row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.score-container li {
+    max-width: 25px;
+    color: green;
+}
+
+.center-item {
+    text-align: center;
+}
+
+.name {
+    color: plum;
+}
+
+#profile {
+    margin-top: 15px;
+}

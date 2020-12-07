@@ -140,8 +140,7 @@ class QuizView extends Component {
   }
   
 
-  saveUserScore = () => {
-    
+  saveUserScore = () => {   
     const { player, setPlayer} = this.context;
     if (player.name === null)
       return;  // no player id, cannot save scores
@@ -200,7 +199,7 @@ class QuizView extends Component {
   }
 
   renderPlay(){   
-    return this.state.previousQuestions.length === questionsPerPlay || this.state.forceEnd
+    return this.state.previousQuestions.length >= questionsPerPlay || this.state.forceEnd
       ? this.renderFinalScore()
       : this.state.showAnswer 
         ? this.renderCorrectAnswer()

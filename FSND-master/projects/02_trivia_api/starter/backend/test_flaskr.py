@@ -40,7 +40,8 @@ class TriviaTestCase(unittest.TestCase):
         # get last question in question table for deletion as default
         self.question_to_delete_id = 0
         self.player_to_delete_id = 0
-        self.new_player = {"name": "Trivia Olivia"}
+        self.category_to_delete_id = 0
+        
         player = Player.query.order_by(Player.id.desc()).first()
         if player:
             self.player_to_delete_id = player.id
@@ -49,17 +50,26 @@ class TriviaTestCase(unittest.TestCase):
         if question:
             self.question_to_delete_id = question.id
 
+        category = Category.query.order_by(Category.id.desc()).first()
+        if category:
+            self.category_to_delete_id = category.id
+
         self.quiz_category = {'id': 4, 
                             'type':'History'}
 
         self.invalid_quiz_category = {'id': 100, 
                             'type':'History'}
 
+
+        self.new_player = {"name": "Trivia Olivia"}
+        self.new_category = {"category_type": "Music"}
+
         self.new_question = Question (
             question = "Who is widely considered to be the world's first computer programmer?",
             answer = "Ada Lovelace",
             difficulty = 3,
-            category = 4
+            category = 4,
+            rating = 3
         )
         self.new_question = self.new_question.format()
 
@@ -68,7 +78,8 @@ class TriviaTestCase(unittest.TestCase):
             question = "Who is widely considered to be the world's first computer programmer?",
             answer = "Ada Lovelace",
             difficulty = 3,
-            category = self.quiz_category
+            category = self.quiz_category,
+            rating = 3
         )
         self.invalid_new_question = self.invalid_new_question.format()
 
@@ -78,28 +89,32 @@ class TriviaTestCase(unittest.TestCase):
                     "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?",
                     "answer": "Maya Angelou",
                     "category": 4,
-                    "difficulty": 2
+                    "difficulty": 2,
+                    "rating": 3
                 }, 
                 {
                     "id": 9,
                     "question": "What boxer's original name is Cassius Clay?",
                     "answer": "Muhammad Ali",
                     "category": 4,
-                    "difficulty": 1
+                    "difficulty": 1,
+                    "rating": 3
                 },
                 {
                     "id": 12, 
                     "question": "Who invented Peanut Butter?", 
                     "answer": "George Washington Carver", 
                     "category": 4, 
-                    "difficulty": 2
+                    "difficulty": 2,
+                    "rating": 3
                 },
                 {
                     "id": 23, 
                     "question": "Which dung beetle was worshipped by the ancient Egyptians?", 
                     "answer": "Scarab", 
                     "category": 4, 
-                    "difficulty": 4
+                    "difficulty": 4,
+                    "rating": 3
                 }]
 
     
@@ -181,6 +196,9 @@ class TriviaTestCase(unittest.TestCase):
         """ Test ADD/POST New question """
         res = self.client().post('/questions', json=self.new_question)
         data = json.loads(res.data)
+        
+        question = Question.query.filter(Question.id==data['created']).one_or_none()        
+        self.assertEqual(data['created'], question.id)
         self.assertEqual(data['success'], True)
         self.assertEqual(res.status_code, 200)
 
@@ -292,6 +310,35 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['deleted'], self.player_to_delete_id)
+
+    def test_add_new_category_POST(self):
+        """ Test ADD/POST New category """
+        res = self.client().post('/categories', json=self.new_category)
+        data = json.loads(res.data)
+
+        category = Category.query.filter(Category.id==data['created']).one_or_none()        
+        self.assertEqual(data['created'], category.id)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 200)    
+
+    def test_delete_category_DELETE(self):
+        """ Test DELETE  category """
+        delete_path = "/categories/" + str(self.category_to_delete_id)
+        res = self.client().delete(delete_path)
+        data = json.loads(res.data)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['deleted'], self.category_to_delete_id)
+    
+    def test_update_rating_POST(self):
+        """ Test update rating """
+        res = self.client().post('/ratings', json={ "id": 5, "rating": 2})
+        data = json.loads(res.data)
+
+        question = Question.query.filter(Question.id==data['modified']).one_or_none()        
+        self.assertEqual(data['modified'], question.id)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 200) 
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

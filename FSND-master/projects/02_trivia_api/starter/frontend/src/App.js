@@ -14,13 +14,13 @@ import QuestionView from './components/QuestionView';
 import Header from './components/Header';
 import QuizView from './components/QuizView';
 
-const playerProfileInfo = {  //will want to pull this data from database instead...for now hard code data for testing purposess
+let playerProfileInfo = {  //default data for Player context
   id: 0,
   name: null,
 }
 
 class App extends Component {
-  render() {
+  render(){
     return (
     <PlayerProvider value={playerProfileInfo}>
     <div className="App">

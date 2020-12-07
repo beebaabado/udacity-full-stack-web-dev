@@ -5,7 +5,7 @@
 # Full Stack Web Developer Nanodegree Trivia API Backend 
 # for accessing database used by Udacity triva app - project 2
 
-# import sys  #for debugging
+#import sys  #for debugging
 import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -59,6 +59,44 @@ def create_app(test_config=None):
           "total_categories": len(Category.query.all())
       })
   
+  # ---------------------- Create Categories --------------------------------
+  # Add a new category    
+  @app.route('/categories', methods=['POST'])
+  def create_category():
+      
+      body = request.get_json()
+      if body==None:
+          abort(400)
+      
+      try: 
+          new_category = Category(
+            type = body['category_type']
+          )
+          new_category.insert()
+
+          return jsonify({
+            "success": True,
+            "created": new_category.id
+          })
+      except:
+          abort(422)  
+
+  # ---------------------- Delete Category -------------------------------
+  # Delete category with give id, returns deleted category id
+  @app.route('/categories/<int:category_id>', methods=['DELETE'])
+  def delete_category(category_id):
+
+      try:
+          category = Category.query.get(category_id)
+          category.delete()
+      except:
+          abort(422)
+
+      return jsonify({
+        "success": True,
+        "deleted": category.id
+      })
+
   # ---------------------- GET Questions ---------------------------------
   # Return paginated questions, total question count, current category and 
   # total categories
@@ -104,8 +142,7 @@ def create_app(test_config=None):
       try: 
           if search_term:
               selection = Question.query.filter(Question.question.ilike('%' + search_term + '%')).all()
-              current_questions = paginate_questions(request, selection)
-              
+              current_questions = paginate_questions(request, selection)              
               return jsonify({
                   "success":True,
                   "questions": current_questions,
@@ -116,7 +153,8 @@ def create_app(test_config=None):
                   question = body['question'],
                   answer = body['answer'],
                   difficulty = body['difficulty'],
-                  category = body['category']
+                  category = body['category'],
+                  rating = 0
               )
               new_question.insert()
           
@@ -310,6 +348,31 @@ def create_app(test_config=None):
       except:
           #print(sys.exc_info())
           abort(422) 
+
+  # ---------------------- Update question Rating -----------------------
+  # update rating for question with specified id
+  #
+  @app.route('/ratings', methods=['POST'])
+  def update_rating():
+
+      body = request.get_json()
+
+      if body==None:
+          abort(400)
+
+      try:
+          question = Question.query.get(body["id"])
+          question.rating = body["rating"]
+          question.update()
+
+          return jsonify({
+              "success": True,
+              "modified": question.id
+          })
+      except:
+          #print(sys.exc_info())
+          abort(422) 
+ 
   # --------------------- ERROR handlers ---------------------------------
   
   @app.errorhandler(404)

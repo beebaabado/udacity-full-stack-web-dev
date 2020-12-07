@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
-
+import FormNewCateogryView from './FormNewCategoryView';
 import '../stylesheets/FormView.css';
 
 class FormView extends Component {
@@ -30,7 +30,6 @@ class FormView extends Component {
       }
     })
   }
-
 
   submitQuestion = (event) => {
     event.preventDefault();
@@ -115,6 +114,10 @@ class FormView extends Component {
             <span style={{"visibility": this.state.visibility ? 'visible' : 'hidden'}}>Question was added successfully.</span>
           </div>
         </form>
+      <div>
+        <FormNewCateogryView>
+        </FormNewCateogryView>
+      </div>
       </div>
     );
   }

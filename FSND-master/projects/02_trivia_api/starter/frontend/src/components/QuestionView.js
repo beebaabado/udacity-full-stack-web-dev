@@ -102,7 +102,7 @@ class QuestionView extends Component {
     })
   }
   
-  questionAction = (id) => (action) => {
+  questionAction = (id) => (action, data) => {
     if(action === 'DELETE') {
       if(window.confirm('are you sure you want to delete the question?')) {
         $.ajax({
@@ -118,8 +118,30 @@ class QuestionView extends Component {
         })
       }
     }
+    if (action === 'RATING') {
+      $.ajax({
+        url: `/ratings`,
+        type: "POST",
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          rating: data.rating,
+          id: data.id }),        
+        xhrFields: {
+          withCredentials: true
+        },
+        crossDomain: true,
+        success: (result) => {
+          this.getQuestions();
+        },
+        error: (error) => {
+          alert('Unable to save rating. Please try your request again.')
+          return;
+        }
+      })
+    }
   }
-
+  
   render() {
     return (
        <div className="question-view">
@@ -131,7 +153,11 @@ class QuestionView extends Component {
                 <li key={category.id} onClick={() => { this.getByCategory(category.id); } }>
                   <div class="category-list-holder">
                     <div class="category-list-item-left">
-                        <img className="category" src={`${category.type}.svg`} alt=""/>
+                        <img className="category" src={`${category.type}.svg`} alt="" 
+                        onError={(event) => {
+                           event.target.onerror = null
+                           event.target.src = 'default_blackdot.svg'
+                        }}/>
                     </div>
                     <div class="category-list-item-right">
                         {category.type}
@@ -148,10 +174,12 @@ class QuestionView extends Component {
           {this.state.questions.map((q, ind) => (
             <Question
               key={q.id}
+              id={q.id}
               question={q.question}
               answer={q.answer}
               category={q.category_type} 
               difficulty={q.difficulty}
+              rating={q.rating}
               questionAction={this.questionAction(q.id)}
             />
           ))}
