@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.3
--- Dumped by pg_dump version 11.3
+-- Dumped from database version 12.4
+-- Dumped by pg_dump version 12.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -18,10 +18,10 @@ SET row_security = off;
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
--- Name: categories; Type: TABLE; Schema: public; Owner: caryn
+-- Name: categories; Type: TABLE; Schema: public; Owner: connie
 --
 
 CREATE TABLE public.categories (
@@ -30,10 +30,10 @@ CREATE TABLE public.categories (
 );
 
 
-ALTER TABLE public.categories OWNER TO caryn;
+ALTER TABLE public.categories OWNER TO connie;
 
 --
--- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: caryn
+-- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: connie
 --
 
 CREATE SEQUENCE public.categories_id_seq
@@ -45,17 +45,51 @@ CREATE SEQUENCE public.categories_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.categories_id_seq OWNER TO caryn;
+ALTER TABLE public.categories_id_seq OWNER TO connie;
 
 --
--- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: caryn
+-- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: connie
 --
 
 ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
 
 
 --
--- Name: questions; Type: TABLE; Schema: public; Owner: caryn
+-- Name: player; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.player (
+    id integer NOT NULL,
+    name character varying
+);
+
+
+ALTER TABLE public.player OWNER TO postgres;
+
+--
+-- Name: player_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.player_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.player_id_seq OWNER TO postgres;
+
+--
+-- Name: player_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.player_id_seq OWNED BY public.player.id;
+
+
+--
+-- Name: questions; Type: TABLE; Schema: public; Owner: connie
 --
 
 CREATE TABLE public.questions (
@@ -63,14 +97,15 @@ CREATE TABLE public.questions (
     question text,
     answer text,
     difficulty integer,
-    category integer
+    category integer,
+    rating integer
 );
 
 
-ALTER TABLE public.questions OWNER TO caryn;
+ALTER TABLE public.questions OWNER TO connie;
 
 --
--- Name: questions_id_seq; Type: SEQUENCE; Schema: public; Owner: caryn
+-- Name: questions_id_seq; Type: SEQUENCE; Schema: public; Owner: connie
 --
 
 CREATE SEQUENCE public.questions_id_seq
@@ -82,31 +117,81 @@ CREATE SEQUENCE public.questions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.questions_id_seq OWNER TO caryn;
+ALTER TABLE public.questions_id_seq OWNER TO connie;
 
 --
--- Name: questions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: caryn
+-- Name: questions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: connie
 --
 
 ALTER SEQUENCE public.questions_id_seq OWNED BY public.questions.id;
 
 
 --
--- Name: categories id; Type: DEFAULT; Schema: public; Owner: caryn
+-- Name: score; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.score (
+    id integer NOT NULL,
+    value integer,
+    player_id integer,
+    category_id integer
+);
+
+
+ALTER TABLE public.score OWNER TO postgres;
+
+--
+-- Name: score_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.score_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.score_id_seq OWNER TO postgres;
+
+--
+-- Name: score_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.score_id_seq OWNED BY public.score.id;
+
+
+--
+-- Name: categories id; Type: DEFAULT; Schema: public; Owner: connie
 --
 
 ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
 
 
 --
--- Name: questions id; Type: DEFAULT; Schema: public; Owner: caryn
+-- Name: player id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.player ALTER COLUMN id SET DEFAULT nextval('public.player_id_seq'::regclass);
+
+
+--
+-- Name: questions id; Type: DEFAULT; Schema: public; Owner: connie
 --
 
 ALTER TABLE ONLY public.questions ALTER COLUMN id SET DEFAULT nextval('public.questions_id_seq'::regclass);
 
 
 --
--- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: caryn
+-- Name: score id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.score ALTER COLUMN id SET DEFAULT nextval('public.score_id_seq'::regclass);
+
+
+--
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.categories (id, type) FROM stdin;
@@ -114,54 +199,138 @@ COPY public.categories (id, type) FROM stdin;
 2	Art
 3	Geography
 4	History
-5	Entertainment
-6	Sports
+9	Entertainment
+13	Music
+8	Sports
 \.
 
 
 --
--- Data for Name: questions; Type: TABLE DATA; Schema: public; Owner: caryn
+-- Data for Name: player; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.questions (id, question, answer, difficulty, category) FROM stdin;
-5	Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?	Maya Angelou	2	4
-9	What boxer's original name is Cassius Clay?	Muhammad Ali	1	4
-2	What movie earned Tom Hanks his third straight Oscar nomination, in 1996?	Apollo 13	4	5
-4	What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?	Tom Cruise	4	5
-6	What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?	Edward Scissorhands	3	5
-10	Which is the only team to play in every soccer World Cup tournament?	Brazil	3	6
-11	Which country won the first ever soccer World Cup in 1930?	Uruguay	4	6
-12	Who invented Peanut Butter?	George Washington Carver	2	4
-13	What is the largest lake in Africa?	Lake Victoria	2	3
-14	In which royal palace would you find the Hall of Mirrors?	The Palace of Versailles	3	3
-15	The Taj Mahal is located in which Indian city?	Agra	2	3
-16	Which Dutch graphic artist–initials M C was a creator of optical illusions?	Escher	1	2
-17	La Giaconda is better known as what?	Mona Lisa	3	2
-18	How many paintings did Van Gogh sell in his lifetime?	One	4	2
-19	Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?	Jackson Pollock	2	2
-20	What is the heaviest organ in the human body?	The Liver	4	1
-21	Who discovered penicillin?	Alexander Fleming	3	1
-22	Hematology is a branch of medicine involving the study of what?	Blood	4	1
-23	Which dung beetle was worshipped by the ancient Egyptians?	Scarab	4	4
+COPY public.player (id, name) FROM stdin;
+1	Bean
+3	Ethan
+4	Tea
+58	Dorothy
+60	Ron
+9	Nyah
+62	Joe
+2	Connie
 \.
 
 
 --
--- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: caryn
+-- Data for Name: questions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.categories_id_seq', 6, true);
+COPY public.questions (id, question, answer, difficulty, category, rating) FROM stdin;
+9	What boxer's original name is Cassius Clay?	Muhammad Ali	1	4	2
+12	Who invented Peanut Butter?	George Washington Carver	2	4	2
+5	Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?	Maya Angelou	2	4	2
+13	What is the largest lake in Africa?	Lake Victoria	2	3	3
+15	The Taj Mahal is located in which Indian city?	Agra	2	3	3
+16	Which Dutch graphic artist–initials M C was a creator of optical illusions?	Escher	1	2	3
+17	La Giaconda is better known as what?	Mona Lisa	3	2	3
+18	How many paintings did Van Gogh sell in his lifetime?	One	4	2	3
+19	Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?	Jackson Pollock	2	2	3
+20	What is the heaviest organ in the human body?	The Liver	4	1	3
+21	Who discovered penicillin?	Alexander Fleming	3	1	3
+22	Hematology is a branch of medicine involving the study of what?	Blood	4	1	3
+23	Which dung beetle was worshipped by the ancient Egyptians?	Scarab	4	4	3
+166	What band has the top artist ranking for all time?	The Beatles	2	13	3
+2	What movie earned Tom Hanks his third straight Oscar nomination, in 1996?	Apollo 13	4	9	3
+4	What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?	Tom Cruise	4	9	3
+149	The name of character on the Big Bang Theory who has a spin off TV series?	Sheldon Cooper	3	9	3
+6	What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?	Edward Scissorhands	3	9	3
+156	Where does Santa Clause presumably live?	Lapland, Finland	4	3	3
+154	What was the name of the dog belonging to Dorothy in the Wizard of Oz?	Toto	1	9	3
+11	Which country won the first ever soccer World Cup in 1930?	Uruguay	4	8	3
+143	What is H2O?	water	1	1	3
+144	Which pharmaceutical company was the first to developed a viable Covid-19 vaccine in the United States?	Phizer	4	1	3
+145	What is the full spelling for the acronym PCR?	polymerase chain reaction	5	1	3
+140	What is one possible breed of dog for Beanie?	Miniature poodle	1	1	3
+63	In which royal palace would you find the Hall of Mirrors?	The Palace of Versailles	3	3	3
+70	Who was the first programmer	Ada Lovelace	3	4	3
+141	What country is called the Land of the Rising Sun?	Japan	3	3	3
+142	What city's mascot is named Koyakun?	Mt Koya	5	4	3
+146	What common item found in the kitchen has the chemical name Sodium Chloride?	salt	1	1	3
+148	What is the name of the anonymous England-based street artist, political activist, and film director?	Banksy	4	2	3
+150	Which of Princess Diana's children left the British monarchy along with his wife Meghan Markle leaving the future of the monarchy up for debate?	Prince Harry	2	4	3
+151	At what temperature does water boil at sea level in degrees celcius?	100	3	1	3
+152	What does I stand for ROYGBIV	Indigo	1	1	3
+155	Near what city is Qattara, the largest natural sink hole in the world, located?	Cairo	5	3	3
+169	How many keys are on a standard size piano keyboard?	88	2	13	1
+10	Which is the only team to play in every soccer World Cup tournament?	Brazil	3	8	2
+\.
 
 
 --
--- Name: questions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: caryn
+-- Data for Name: score; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.questions_id_seq', 23, true);
+COPY public.score (id, value, player_id, category_id) FROM stdin;
+1	2	1	1
+5	3	9	4
+14	4	9	2
+48	1	3	4
+49	4	60	4
+50	4	60	4
+52	4	9	4
+53	3	60	3
+54	4	60	1
+55	4	60	1
+57	4	9	1
+59	2	62	2
+6	4	9	8
+4	2	4	9
+3	4	4	9
+47	5	3	9
+58	3	62	9
+2	3	2	13
+44	5	2	13
+56	5	2	13
+45	4	2	13
+46	4	3	13
+66	1	2	13
+67	5	1	2
+68	4	1	2
+69	1	1	13
+70	5	1	2
+\.
 
 
 --
--- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: caryn
+-- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.categories_id_seq', 15, true);
+
+
+--
+-- Name: player_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.player_id_seq', 74, true);
+
+
+--
+-- Name: questions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.questions_id_seq', 171, true);
+
+
+--
+-- Name: score_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.score_id_seq', 72, true);
+
+
+--
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.categories
@@ -169,7 +338,15 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- Name: questions questions_pkey; Type: CONSTRAINT; Schema: public; Owner: caryn
+-- Name: player player_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.player
+    ADD CONSTRAINT player_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: questions questions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.questions
@@ -177,11 +354,27 @@ ALTER TABLE ONLY public.questions
 
 
 --
--- Name: questions category; Type: FK CONSTRAINT; Schema: public; Owner: caryn
+-- Name: score score_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.score
+    ADD CONSTRAINT score_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: questions category; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.questions
     ADD CONSTRAINT category FOREIGN KEY (category) REFERENCES public.categories(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: score score_player_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.score
+    ADD CONSTRAINT score_player_id_fkey FOREIGN KEY (player_id) REFERENCES public.player(id);
 
 
 --

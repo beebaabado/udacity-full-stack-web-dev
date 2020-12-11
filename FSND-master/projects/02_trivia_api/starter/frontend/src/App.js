@@ -16,7 +16,7 @@ import QuizView from './components/QuizView';
 
 let playerProfileInfo = {  //default data for Player context
   id: 0,
-  name: null,
+  name: '',
 }
 
 class App extends Component {

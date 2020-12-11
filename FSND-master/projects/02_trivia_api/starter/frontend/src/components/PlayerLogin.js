@@ -45,7 +45,6 @@ class PlayerLogin extends Component {
     }
      
     this.setState({ error: '' })
-    console.log(this.state.name);
     return(this.props.playerAction(this.state.name));
   }
  
@@ -56,7 +55,6 @@ class PlayerLogin extends Component {
           {
             this.state.error &&
             <h3 data-test="error" onClick={this.dismissError}>
-              <button onClick={this.dismissError}>✖</button>
               {this.state.error}
             </h3>
           }

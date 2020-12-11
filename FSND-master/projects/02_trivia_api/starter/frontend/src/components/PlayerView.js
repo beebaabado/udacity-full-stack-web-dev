@@ -28,7 +28,8 @@ class PlayerView extends Component {
     const { player, setPlayer } = this.context;
     const currPlayer = { id: params.get('player_id'), name: params.get('player_name') }
     setPlayer(currPlayer);
-    this.getPlayer(currPlayer.name);
+    if (currPlayer.name)
+      this.getPlayer(currPlayer.name);
   }
   
   shouldComponentUpdate(nextProps, nextState){

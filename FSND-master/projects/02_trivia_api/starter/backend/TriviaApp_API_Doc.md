@@ -278,7 +278,7 @@ Retrieves a listing of all categories
 
 - Request Arguments: None
 - method: HTTP request method is GET (by default)
-- Returns: dictionary of category objects as 'categories': [{category 1}...{category n}],  success status as 'success': <boolean>, and total number of categories as 'total_categories':<integer>.  Category Ids will not necessarily be consecutive numbers in database (ids are not reused if a category is deleted and a new one is created.)
+- Returns: List of category objects as 'categories':   [{category 1}...{category n}],  success status as 'success': \<boolean\>, and total number of categories as 'total_categories':\<integer\> Category Ids will not necessarily be consecutive numbers in database (ids are not reused if a category is deleted and a new one is created.)
 
 - Response Attributes
   - categories:  list of categories
@@ -326,7 +326,7 @@ Retrieves a listing of all categories
 ### GET `/questions`
 Retrieves questions and returns a subset using pagination (see description of pagination). Returns paginated page=1 by default.  Also returns total question count, all current_categories, and current category (defaulted to category id=1).
 
-- Request Arguments:  as query paramenter as  page=<int>
+- Request Arguments:  as query paramenter as  page=\<integer\>
 - method: HTTP request method is GET (by default)
 - Returns: a dictionary with Category objects, dictionary paginagted Question objects, current category and total number of questions in database.
 
@@ -514,7 +514,7 @@ Delete category with specified id.
 
 - Request Arguments: category_id as integer
 - method: HTTP request method is DELETE
-- Returns:  "success":<Boolean>, "deleted": <integer>
+- Returns:  "success":\<Boolean\>, "deleted": \<integer\>
 
 - Response Attributes
    - success: true if request was successful
@@ -538,7 +538,7 @@ Retrieve a list of questions based upon category id.
 
 - Request Arguments: category_id as integer
 - method: HTTP request method is GET (by default)
-- Returns:  "success":<Boolean>, "total_quesions": <integer>, dictionary paginagted Question objects, total questions and current category.
+- Returns:  "success":\<Boolean\>, "total_quesions": \<integer\>, dictionary paginagted Question objects, total questions and current category.
 
 - Response Attributes
   - questions:  list of paginated questions
@@ -603,7 +603,7 @@ Create a new question
     }
   ```  
 - method: HTTP request method is POST
-- Returns: "success": <Boolean>,  "created": <integer>, "total_questions": <integer>, dictionary paginagted question objects as 'questions' with key/value pairs:
+- Returns: "success": \<Boolean>,  "created": \<integer>, "total_questions": \<integer>, dictionary paginagted \<Queston> objects
      ```
       {
       "answer": <string>, 
@@ -712,7 +712,7 @@ Delete question with specified id.
 
 - Request Arguments: question_id as integer
 - method: HTTP request method is DELETE
-- Returns:  "success":<Boolean>, "deleted": <integer>
+- Returns:  "success":\<Boolean>, "deleted": \<integer>
 
 - Response Attributes
    - success: true if request was successful
@@ -749,7 +749,7 @@ Search for questions that contain specific search term.
   ```
 
 - method: HTTP request method is POST
-- Returns: "success": <Boolean>, "total_questions": <integer>, "questions": list of paginagted <Question> objects:
+- Returns: "success": \<Boolean>, "total_questions": \<integer>, "questions": list of paginagted \<Question> objects:
   ```
       {
        "success": <boolean>,
@@ -827,7 +827,7 @@ Retrieve a random quiz question from specifiec category of questions.  Category 
   }
   ``` 
 - method: HTTP request method is POST
-- Returns:  "success":<Boolean>, "question": <Question>
+- Returns:  "success":\<Boolean>, "question": \<Question>
 
 - Response Attributes
    - success: true if request was successful
@@ -889,7 +889,7 @@ Create a new score for player
     }
   ```  
 - method: HTTP request method is POST
-- Returns: "success": <Boolean>,  "created": <integer>:
+- Returns: "success": \<Boolean>,  "created": \<integer>
   ```  
       {
       "created": <integer>, 
@@ -931,7 +931,7 @@ Create a new player
     }
   ```  
 - method: HTTP request method is POST
-- Returns: "success": <Boolean>,  "created": <integer>
+- Returns: "success": \<Boolean>,  "created": \<integer>
      ```
       {
        "success": <Boolean>,
@@ -961,7 +961,7 @@ Retrieve player profile using player name.
 
 - Request Arguments: player_name as string
 - method: HTTP request method is GET (by default)
-- Returns:  "success":<Boolean>, "player": <Player>, "scores": list of <Score> objects, "scoreCount":<Integer>:
+- Returns:  "success":\<Boolean>, "player": \<Player>, "scores": list of \<Score> objects, "scoreCount":\<Integer>:
   ```   
       {
       "success": <Boolean>,
@@ -1008,7 +1008,7 @@ Delete player and associated scores with specified player id.
 
 - Request Arguments: player_id as integer
 - method: HTTP request method is DELETE
-- Returns:  "success":<Boolean>, "deleted": <integer>
+- Returns:  "success":\<Boolean>, "deleted":\<integer>
 
 - Response Attributes
    - success: true if request was successful
@@ -1046,7 +1046,7 @@ Update rating for question with specified id
     }
   ```  
 - method: HTTP request method is POST
-- Returns: "success": <Boolean>,  "modified": <integer>
+- Returns: "success": \<Boolean>,  "modified": \<integer>
      ```
       {
        "success": <Boolean>,

@@ -20,7 +20,13 @@ npm install
 
 >_tip_: **npm i** is shorthand for **npm install**
 
-## Required Tasks
+## Modifications to front end
+1. Added react components to allow player to enter name (PlayerLogin, PlayerView).  Player name and scores are retrieved from database and displaye   Player name is displayed in upper right hand corner of header.  If player does not exist then player is prompted to allow new player to be added to the database.  
+2. After playing a quiz, if player specified a name then score is saved to the database.
+3. Added react component PlayerContext to store player information in order to understand how context object works in react.
+4. Added ability to add questions and categories to the database.  Currently cannot add new image for the category.  New category image will be default image:  default_blackdot.svg.
+5. Added ratings stars to questions.  Player can set ratings and they will be stored in the database.  
+   
 
 ## Running Your Frontend in Dev Mode
 
