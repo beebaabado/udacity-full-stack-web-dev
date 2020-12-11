@@ -84,3 +84,5 @@ python test_flaskr.py
 ## API Documentation
 The documentation for the Trivia App API can be found in the file: 
 > [TriviaApp_API_DOC.md](./TriviaApp_API_Doc.md).
+
+## Acknowledgements
