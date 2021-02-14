@@ -1,0 +1,23 @@
+ion-content{
+    --ion-background-color: #E1C699;
+}
+
+ion-title {
+    font-family: 'Playfair Display', serif;  
+    font-size: 1.7em;
+}
+
+.small-img{
+    width: 48;
+    height: 48px;
+    padding-right:15px;
+ }
+
+ .ion-col-right {
+    justify-content: right;
+    padding-right: 0px;
+}
+
+.ion-button-tall {
+    height: 48px;
+}

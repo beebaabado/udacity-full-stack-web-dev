@@ -16,9 +16,16 @@ export class DrinkMenuPage implements OnInit {
     private auth: AuthService,
     private modalCtrl: ModalController,
     public drinks: DrinksService
-    ) { }
-
+    ) { 
+      }
+    
   ngOnInit() {
+    console.log("drinks-mue: ngOnInit");
+    this.drinks.getDrinks();
+  }
+
+  ionViewWillEnter() {
+    console.log("drink-menu:ionViewWillEnter");
     this.drinks.getDrinks();
   }
 

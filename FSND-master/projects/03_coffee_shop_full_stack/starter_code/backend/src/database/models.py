@@ -29,12 +29,12 @@ def db_drop_and_create_all():
     db.drop_all()
     db.create_all()
 
-'''
+'''is
 Drink
 a persistent drink entity, extends the base SQLAlchemy Model
 '''
 class Drink(db.Model):
-    # Autoincrementing, unique primary key
+    # Autoincrementing, unique primary keyd
     id = Column(Integer().with_variant(Integer, "sqlite"), primary_key=True)
     # String Title
     title = Column(String(80), unique=True)
@@ -47,7 +47,6 @@ class Drink(db.Model):
         short form representation of the Drink model
     '''
     def short(self):
-        print(json.loads(self.recipe))
         short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in json.loads(self.recipe)]
         return {
             'id': self.id,
@@ -76,6 +75,7 @@ class Drink(db.Model):
             drink.insert()
     '''
     def insert(self):
+
         db.session.add(self)
         db.session.commit()
 
@@ -101,6 +101,7 @@ class Drink(db.Model):
             drink.update()
     '''
     def update(self):
+        print("Update drink")
         db.session.commit()
 
     def __repr__(self):

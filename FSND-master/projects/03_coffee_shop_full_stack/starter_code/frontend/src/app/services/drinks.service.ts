@@ -11,7 +11,7 @@ export interface Drink {
           name: string,
           color: string,
           parts: number
-        }>;
+        }>;     
 }
 
 @Injectable({
@@ -20,7 +20,7 @@ export interface Drink {
 export class DrinksService {
 
   url = environment.apiServerUrl;
-
+  public drinkCount: number;
   public items: {[key: number]: Drink} = {};
   // = {
   //                             1: {
@@ -79,7 +79,6 @@ export class DrinksService {
   //                           }
   //   };
 
-
   constructor(private auth: AuthService, private http: HttpClient) { }
 
   getHeaders() {
@@ -91,18 +90,32 @@ export class DrinksService {
   }
 
   getDrinks() {
+
     if (this.auth.can('get:drinks-detail')) {
+
+      console.log("auth-get-drink-details");
+      console.log(this.auth.token);  
+      
       this.http.get(this.url + '/drinks-detail', this.getHeaders())
       .subscribe((res: any) => {
         this.drinksToItems(res.drinks);
-        console.log(res);
+        this.drinkCount = res.number_drinks;
       });
-    } else {
+    } 
+    else if (this.auth.can('get:drinks')) {
+
+      console.log("auth-get-drink");
+      console.log(this.auth.token)
+
       this.http.get(this.url + '/drinks', this.getHeaders())
       .subscribe((res: any) => {
         this.drinksToItems(res.drinks);
-        console.log(res);
+        this.drinkCount = res.number_drinks;
       });
+    } 
+    // no permission to see drink items
+    else {
+      this.clearDrinksMenu();
     }
 
   }
@@ -134,9 +147,12 @@ export class DrinksService {
     });
   }
 
+  clearDrinksMenu(){
+    this.items = {};
+  }
   drinksToItems( drinks: Array<Drink>) {
     for (const drink of drinks) {
       this.items[drink.id] = drink;
     }
   }
-}
+}  

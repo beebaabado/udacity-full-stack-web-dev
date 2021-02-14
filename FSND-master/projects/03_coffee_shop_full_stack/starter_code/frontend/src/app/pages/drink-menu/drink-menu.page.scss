@@ -3,3 +3,23 @@ ion-title {
     font-family: 'Playfair Display', serif;  
     font-size: 1.7em;
 }
+
+ion-content{
+    --ion-background-color: #E1C699;
+}
+
+.card {
+    //--ion-background--color: #F3EBE1;
+    --ion-background--color: #blue;
+}
+
+.small-img{
+    width: 48;
+    height: 48px;
+    padding-right:0px;
+ }
+
+ .ion-col-left {
+    text-align: left;
+    padding-left: 0px;
+}

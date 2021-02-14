@@ -1,6 +1,18 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>user-page</ion-title>
+     <ion-grid>
+      <ion-row>
+        <ion-col class="ion-col-left" size ="2">
+          <ion-title >User</ion-title>
+        </ion-col>
+        <ion-col style="text-align:center;">
+          <ion-title ><b>Uda-Spice Latte</b> Cafe</ion-title>
+        </ion-col>
+        <ion-col size="2">
+          <ion-img class="small-img" src="../../assets/image/coffeeclipart48x48.png"></ion-img>
+        </ion-col>
+     </ion-row>
+    </ion-grid>
   </ion-toolbar>
 </ion-header>
 
@@ -10,7 +22,7 @@
 <ion-content *ngIf="auth.token">
   <ion-button (click)="auth.logout()">Log Out</ion-button>
       <ion-item>
-        <ion-label>Active JWT</ion-label>
-        <ion-textarea [ngModel]="auth.token" name="Active JWT"></ion-textarea>
+        <ion-label position="stacked">Active JWT  expires: <br/> {{ auth.tokenexptime }} </ion-label>
+        <ion-textarea rows="10" cols="50" [ngModel]="auth.token" name="Active JWT"></ion-textarea>
       </ion-item>
 </ion-content>
