@@ -14,6 +14,7 @@ export class UserPagePage implements OnInit {
   constructor(public auth: AuthService) {
    this.user_login();
   }
+  
   ngOnInit() {
     console.log("userpage:ngInit");
     if (this.auth.isExpired()){
@@ -21,7 +22,14 @@ export class UserPagePage implements OnInit {
     }
   }
 
-  ionViewWillEnter() {
+  // messing around with user login behavior when token is expired.
+  // not part of project rubric so commenting out for now.
+  /* 
+  
+   ionViewWillEnter() {
+     
+    // messing around with user login behavior when token is expired.
+    // not part of project rubric so commenting out for now.
     console.log("userpage:ionViewWillEnter");
     // logs out user if token is expired and prompts user for relogin
     if (this.firstLogin){
@@ -32,7 +40,7 @@ export class UserPagePage implements OnInit {
         this.user_login();
       }
   }
-
+ */
   user_login() {
     this.loginURL = this.auth.build_login_link('/tabs/user-page');
     this.auth.getExpiredTime();

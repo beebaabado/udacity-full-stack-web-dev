@@ -22,62 +22,6 @@ export class DrinksService {
   url = environment.apiServerUrl;
   public drinkCount: number;
   public items: {[key: number]: Drink} = {};
-  // = {
-  //                             1: {
-  //                             id: 1,
-  //                             title: 'matcha shake',
-  //                             recipe: [
-  //                                   {
-  //                                     name: 'milk',
-  //                                     color: 'grey',
-  //                                     parts: 1
-  //                                   },
-  //                                   {
-  //                                     name: 'matcha',
-  //                                     color: 'green',
-  //                                     parts: 3
-  //                                   },
-  //                                 ]
-  //                           },
-  //                           2: {
-  //                             id: 2,
-  //                             title: 'flatwhite',
-  //                             recipe: [
-
-  //                                   {
-  //                                     name: 'milk',
-  //                                     color: 'grey',
-  //                                     parts: 3
-  //                                   },
-  //                                   {
-  //                                     name: 'coffee',
-  //                                     color: 'brown',
-  //                                     parts: 1
-  //                                   },
-  //                                 ]
-  //                           },
-  //                           3: {
-  //                             id: 3,
-  //                             title: 'cap',
-  //                             recipe: [
-  //                                   {
-  //                                     name: 'foam',
-  //                                     color: 'white',
-  //                                     parts: 1
-  //                                   },
-  //                                   {
-  //                                     name: 'milk',
-  //                                     color: 'grey',
-  //                                     parts: 2
-  //                                   },
-  //                                   {
-  //                                     name: 'coffee',
-  //                                     color: 'brown',
-  //                                     parts: 1
-  //                                   },
-  //                                 ]
-  //                           }
-  //   };
 
   constructor(private auth: AuthService, private http: HttpClient) { }
 
@@ -91,11 +35,7 @@ export class DrinksService {
 
   getDrinks() {
 
-    if (this.auth.can('get:drinks-detail')) {
-
-      console.log("auth-get-drink-details");
-      console.log(this.auth.token);  
-      
+    if (this.auth.can('get:drinks-detail')) {      
       this.http.get(this.url + '/drinks-detail', this.getHeaders())
       .subscribe((res: any) => {
         this.drinksToItems(res.drinks);
@@ -103,10 +43,6 @@ export class DrinksService {
       });
     } 
     else if (this.auth.can('get:drinks')) {
-
-      console.log("auth-get-drink");
-      console.log(this.auth.token)
-
       this.http.get(this.url + '/drinks', this.getHeaders())
       .subscribe((res: any) => {
         this.drinksToItems(res.drinks);
@@ -143,13 +79,14 @@ export class DrinksService {
     delete this.items[drink.id];
     this.http.delete(this.url + '/drinks/' + drink.id, this.getHeaders())
     .subscribe( (res: any) => {
-
+       
     });
   }
 
   clearDrinksMenu(){
     this.items = {};
   }
+  
   drinksToItems( drinks: Array<Drink>) {
     for (const drink of drinks) {
       this.items[drink.id] = drink;

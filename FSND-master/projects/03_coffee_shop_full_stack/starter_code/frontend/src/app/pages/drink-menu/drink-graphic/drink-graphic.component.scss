@@ -4,7 +4,9 @@
     display: flex;
     flex-direction: column;
     border-radius: 7px;
+    border: solid 1px black;
     overflow: hidden;
+    margin: 15px;
 }
 
 .ingredient {

@@ -29,7 +29,7 @@ def db_drop_and_create_all():
     db.drop_all()
     db.create_all()
 
-'''is
+'''
 Drink
 a persistent drink entity, extends the base SQLAlchemy Model
 '''
@@ -101,7 +101,6 @@ class Drink(db.Model):
             drink.update()
     '''
     def update(self):
-        print("Update drink")
         db.session.commit()
 
     def __repr__(self):

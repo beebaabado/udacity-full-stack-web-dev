@@ -57,19 +57,10 @@ def get_token_auth_header():
     token = parts[1]
     return token
 
-'''
-@TODO implement check_permissions(permission, payload) method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
-        payload: decoded jwt payload
-
-    it should raise an AuthError if permissions are not included in the payload
-    !!NOTE check your RBAC settings in Auth0
-    it should raise an AuthError if the requested permission string is not in the payload permissions array
-    return true otherwise
+## check_permissions(permission, payload) method
+''' check permissions against payload 
 '''
 def check_permissions(permission, payload):
-    print("Permissions:", permission)
     if 'permissions' not in payload:
        raise AuthError({
             'code': 'invalid_claims',
@@ -85,6 +76,8 @@ def check_permissions(permission, payload):
     #permission looks valid
     return True
 
+
+## Verify JWT
 '''
    get jwks with .well-known/jwks.json
    Compare keys and return decoded payload
@@ -145,26 +138,21 @@ def verify_decode_jwt(token):
                 'code': 'invalid_header',
                 'description': 'Unable to find the appropriate key.'
             }, 400)
-    
-'''
-@TODO implement @requires_auth(permission) decorator method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
 
-    it should use the get_token_auth_header method to get the token
-    it should use the verify_decode_jwt method to decode the jwt
-    it should use the check_permissions method validate claims and check the requested permission
-    return the decorator which passes the decoded payload to the decorated method
+## requires_auth    
+'''
+   get_token_auth_header method to get the token
+   verify_decode_jwt method to decode the jwt
+   check_permissions method validate claims and check the requested permission
+   return the decorator which passes the decoded payload to the decorated method
 '''
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            print("IN WRAPPER...")
             token = get_token_auth_header()
             payload = verify_decode_jwt(token)
             check_permissions(permission, payload)
-            print("BEFORE RETURN...")
             return f(payload, *args, **kwargs)
         return wrapper
     return requires_auth_decorator

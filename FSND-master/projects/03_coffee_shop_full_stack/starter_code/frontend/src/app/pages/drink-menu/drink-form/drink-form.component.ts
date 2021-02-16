@@ -11,7 +11,7 @@ import { AuthService } from 'src/app/services/auth.service';
 export class DrinkFormComponent implements OnInit {
   @Input() drink: Drink;
   @Input() isNew: boolean;
-
+  public refreshDrinks: boolean = false;
   constructor(
     public auth: AuthService,
     private modalCtrl: ModalController,
@@ -42,6 +42,7 @@ export class DrinkFormComponent implements OnInit {
   }
 
   closeModal() {
+    //this.drinkService.getDrinks(); // refresh screen - in case user made changes that were not changed - get back to valid state
     this.modalCtrl.dismiss();
   }
 
@@ -53,5 +54,6 @@ export class DrinkFormComponent implements OnInit {
   deleteClicked() {
     this.drinkService.deleteDrink(this.drink);
     this.closeModal();
+
   }
 }

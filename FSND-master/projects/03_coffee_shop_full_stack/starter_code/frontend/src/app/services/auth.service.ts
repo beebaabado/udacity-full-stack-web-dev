@@ -63,8 +63,6 @@ export class AuthService {
 
   set_jwt() {
     localStorage.setItem(JWTS_LOCAL_KEY, this.token);
-    console.log("auth0-setJWT: ");
-    console.log(this.token);
     if (this.token) {
       this.decodeJWT(this.token);
     }
@@ -88,7 +86,6 @@ export class AuthService {
   }
 
   logout() {
-    console.log("USER logout.")
     this.token = '';
     this.payload = null;
     this.set_jwt();
@@ -96,7 +93,8 @@ export class AuthService {
   
   sessionLogout(callbackPath = ''){
     console.log("User session logout.")
-    const  authLogoutEndptUri = 'https://' + this.url + '.auth0.com//v2/logout?client_id=' + this.clientId + '&' + 'returnTo=' + this.callbackURL + callbackPath;
+    // Following results in CORS error...revist later
+    const  authLogoutEndptUri = 'https://' + this.url + '.auth0.com/v2/logout?client_id=' + this.clientId + '&' + 'returnTo=' + this.callbackURL + callbackPath;
     console.log (authLogoutEndptUri);
     
     //header with 
@@ -132,8 +130,6 @@ export class AuthService {
   }
 
   can(permission: string) {
-    console.log("auth0-can: ");
-    console.log(this.payload);
     return this.payload && this.payload.permissions && this.payload.permissions.length && this.payload.permissions.indexOf(permission) >= 0;
   }
   
@@ -148,7 +144,6 @@ export class AuthService {
   getUserName(){
     // use login bearer token which is attached to angular http request header to get user info via Auth0 /userinfo endpoint
     const userinfoUrl = 'https://' + this.url + '.auth0.com/userinfo';
-    
     this.http.get(userinfoUrl, this.getAuthorizationHeader())
       .subscribe((data: UserProfile) => this.user_info = { ...data },
          (err) => console.error(err)

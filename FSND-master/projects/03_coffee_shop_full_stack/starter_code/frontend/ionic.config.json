@@ -1,5 +1,13 @@
 {
   "name": "udaspicelatte",
-  "integrations": {},
-  "type": "angular"
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "proxies": [
+    {
+      "path": "http://localhost:8101/",
+      "proxyUrl": "http://127.0.0.1:5000"
+    }
+  ]
 }

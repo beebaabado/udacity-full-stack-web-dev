@@ -20,12 +20,10 @@ export class DrinkMenuPage implements OnInit {
       }
     
   ngOnInit() {
-    console.log("drinks-mue: ngOnInit");
     this.drinks.getDrinks();
   }
 
   ionViewWillEnter() {
-    console.log("drink-menu:ionViewWillEnter");
     this.drinks.getDrinks();
   }
 
@@ -33,13 +31,19 @@ export class DrinkMenuPage implements OnInit {
     if (!this.auth.can('get:drinks-detail')) {
       return;
     }
-
+  
     const modal = await this.modalCtrl.create({
       component: DrinkFormComponent,
       componentProps: { drink: activedrink, isNew: !activedrink }
     });
+    
+    modal.onDidDismiss().then( () => {
+      this.drinks.getDrinks();
+      console.log("freshed drinks");
+    });
 
     modal.present();
+
   }
 
 }

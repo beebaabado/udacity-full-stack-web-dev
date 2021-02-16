@@ -15,38 +15,34 @@
     </ion-grid>
   </ion-toolbar>
 </ion-header>
-
+<!-- Changed layout to use ion grid to display drinks-->
 <ion-content *ngIf="drinks && drinks.items">
   <ion-grid>
     <ion-row>
       <ion-col size-lg="3" size-md="4" size-sm="6" size="12" 
          *ngFor="let drink of Object.keys(drinks.items);" (click)="openForm(drinks.items[drink]);" >
-          <ion-card>
+          <ion-card class="card" style="align-items: center">
             <ion-card-header>
               <ion-card-title>{{ drinks.items[drink].title }}</ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              <app-drink-graphic [drink]="drinks.items[drink]"></app-drink-graphic>
+              <app-drink-graphic  [drink]="drinks.items[drink]"></app-drink-graphic>
             </ion-card-content>
           </ion-card>
       </ion-col>
-      <ion-col size='4'>
-      </ion-col>
       <ion-col>
         <ion-card
-        style="opacity: .7; align-items: center; display: flex; flex-direction: column; cursor: pointer;" 
+        class="card"
+        style="opacity: .7; cursor: pointer;" 
         *ngIf="auth.can('post:drinks')"
         (click)="openForm()">
            <ion-card-header>
              <ion-card-title>Create Drink</ion-card-title>
            </ion-card-header>
-         
            <ion-card-content style="color:grey; font-size: 256%;">
                <ion-icon name="add-circle"></ion-icon>
            </ion-card-content>
          </ion-card>
-        </ion-col>
-        <ion-col size="4">
         </ion-col>
     </ion-row>
   </ion-grid>  
