@@ -71,7 +71,7 @@ def check_permissions(permission, payload):
         raise AuthError({
             'code': 'unauthorized',
             'description': 'Permissions not found.'
-            }, 403)      
+            }, 401)      
 
     #permission looks valid
     return True
@@ -86,7 +86,6 @@ def check_permissions(permission, payload):
 '''
 def verify_decode_jwt(token):
     
-
     json_url = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jwks = json.loads(json_url.read())
     unverified_header = jwt.get_unverified_header(token) 
@@ -137,7 +136,7 @@ def verify_decode_jwt(token):
     raise AuthError({
                 'code': 'invalid_header',
                 'description': 'Unable to find the appropriate key.'
-            }, 400)
+            }, 401)
 
 ## requires_auth    
 '''

@@ -23,12 +23,31 @@ def after_request(response):
    uncomment the following line to initialize the datbase
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
-
-   It is commented out now to prevent database from being dropped.
 '''
-#db_drop_and_create_all()
+db_drop_and_create_all()
 
 ## ROUTES
+
+'''
+ Endpoint GET /drinks   PUBLIC access Detail for all drinks - with drink.short() representation with drink 
+ title and short recipe (color and parts)
+ not athenticated.  Allows visitors to site to view menu
+'''
+@app.route('/drinks', methods=['GET'])
+def get_drinks_public_view():
+    
+    drinks = Drink.query.all()
+    if drinks== None:
+         abort(404) 
+    drinks_short = [drink.short() for drink in drinks]
+    
+    return jsonify({
+        "status_code": 200,
+        "success": True,
+        "drinks": drinks_short,
+        "number_drinks": len(drinks_short)
+    }), 200
+
 '''
  Endpoint GET /drinks     Detail for all drinks - with drink.short() representation with drink 
  title and short recipe (color and parts)
@@ -40,10 +59,10 @@ def get_drinks(payload):
     print(payload)
     
     drinks = Drink.query.all()
-    drinks_short = [drink.short() for drink in drinks]
-    if len(drinks_short) == 0:
+    if drinks== None:
          abort(404) 
-
+    drinks_short = [drink.short() for drink in drinks]
+    
     return jsonify({
         "status_code": 200,
         "success": True,
@@ -90,9 +109,9 @@ def get_drinks_detail(payload):
     #print(payload)
     
     drinks = Drink.query.all()
+    if drinks==None:
+        abort(404)
     drinks_long = [drink.long() for drink in drinks]
-    if len(drinks_long) == 0:
-         abort(404) 
 
     return jsonify({
         "status_code": 200,
@@ -131,7 +150,7 @@ def add_drink(payload):
         return jsonify({
             "status_code": 200,
             "success": True,
-            "drinks": new_drink.long()
+            "drinks": [new_drink.long()]
         }), 200
     except:
         abort(422)  
@@ -165,11 +184,11 @@ def update_drink(payload, id):
             drink.title = updated_title
         
         drink.update()
-
+            
         return jsonify({
             "status_code": 200,
             "success": True,
-            "drinks": drink.long()
+            "drinks": [drink.long()]
         }), 200
     except:
         abort(422) 
@@ -261,5 +280,5 @@ def auth_error(ex):
 # Or specify port manually:
 import os
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5001))
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='127.0.0.1', port=port)
