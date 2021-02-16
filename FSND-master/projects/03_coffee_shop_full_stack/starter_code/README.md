@@ -33,3 +33,9 @@ The `./backend` directory contains a partially completed Flask server with a pre
 The `./frontend` directory contains a complete Ionic frontend to consume the data from the Flask server. You will only need to update the environment variables found within (./frontend/src/environment/environment.ts) to reflect the Auth0 configuration details set up for the backend app. 
 
 [View the README.md within ./frontend for more details.](./frontend/README.md)
+
+### Acknowledgements
+Used Google images for free coffee latte art image on /tabs/home page : https://www.freepik.com/free-photo/latte-coffee-cup_1037908.htm
+Used Stackoverflow.com/Auth0.com  for solution on how to implement Auth0 api endpoints  /userinfo   and /v2/logout
+Stackoverflow.com for using .subscribe in angular/ionic.
+Udacity classwork BasicFlaskAuth for practice code for backend authentication code for handling JWT tokens.
